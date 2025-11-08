@@ -46,5 +46,16 @@
         <file>GameRes/images/ZombiesWon.png</file>
         <file>GameRes/images/ZombieWalk1.gif</file>
         <file>GameRes/images/ZombieWalk2.gif</file>
+        <file>GameRes/images/muliBoki.gif</file>
+        <file>GameRes/images/muliBoki.png</file>
+        <file>GameRes/images/miku.gif</file>
+        <file>GameRes/images/unplantableground.jpg</file>
+        <file>GameRes/images/enterbg.jpg</file>
+        <file>GameRes/images/mainMenu.png</file>
+        <file>GameRes/images/start.png</file>
+        <file>GameRes/images/enterStart.png</file>
+        <file>GameRes/GrazyDave.mp3</file>
+        <file>GameRes/GrazyDave2.mp3</file>
+        <file>GameRes/images/selectPlantBg.png</file>
     </qresource>
 </RCC>

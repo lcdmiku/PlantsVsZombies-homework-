@@ -1,28 +1,29 @@
 #ifndef SHOP_H
 #define SHOP_H
 
-#include <QObject>
-#include <QGraphicsPixmapItem>
+#include<QGraphicsSimpleTextItem>
+#include"cardscontainer.h"
 
-class Shop : public QObject, public QGraphicsPixmapItem
+class Shop : public CardsContainer
 {
     Q_OBJECT
+    int totalValue;
+    QGraphicsSimpleTextItem *sunlightText;
 public:
-    explicit Shop();
+    explicit Shop(QGraphicsObject *parent = nullptr);
+
     ~Shop() override;
 
-    // 必须实现的虚函数
-    QRectF boundingRect() const override;
-
-    //显示阳光值
-    void sunlightValue();
+    //显示阳光值并判断阳光是否足够,重载两份
+    bool sunlightValueShow(int sunlightValue,enum PlantType plantType =  PlantType::None);
+    bool sunlightValueShow(int sunlightValue);
     //添加卡片
-    void addCard();
-    //拖拽种植
-    void drawPlant();
+    void addCard(QString plantName);
+
 
 signals:
     // 信号声明
+
 };
 
 #endif // SHOP_H

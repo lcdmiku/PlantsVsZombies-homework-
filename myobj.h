@@ -1,16 +1,82 @@
-#ifndef MYOBJ_H
-#define MYOBJ_H
+#ifndef MYOBJECT_H
+#define MYOBJECT_H
 
-#include <QWidget>
+#include<QMovie>
+#include <QGraphicsObject>
+#include<QPainter>
+#include <QRandomGenerator>
+#include<QPropertyAnimation>
+#include<QTimer>
+#include <QGraphicsObject>
+#include<QGraphicsScene>
 
-class MyObj : public QWidget
-{
-    Q_OBJECT
-public:
-    explicit MyObj(QWidget *parent = nullptr);
-
-
-signals:
+enum class Type{
+    PLANT,
+    ZOMBIE,
+    Bullet,
+    Mower
+};
+enum class ZombieType{
+    None,
+    NormalZombie,
+    ScreenZombie,
+    BucketZombie,
+    ConeZombie,
+    FootballZombie
 };
 
-#endif // MYOBJ_H
+enum class DieType{
+    None,
+    Normal,
+    CherryBOMB
+};
+enum class Direction{
+    None,
+    Up,
+    Down,
+    Left,
+    Right
+};
+
+class MyObject : public QGraphicsObject
+{
+    Q_OBJECT
+    QMovie *movie;
+    //用来时刻进行碰撞检查
+
+
+
+public:
+    explicit MyObject(QGraphicsObject *parent,QString objPath,const enum Type type);
+    // 必须实现的虚函数
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    //static int sunlightGenerate();
+    enum Type getObjType(){return type;}
+    bool IsDead(){return isDead;}
+    ~MyObject();
+
+protected:
+    const enum Type type;
+    const QString objPath;
+    QString CurrentGif;
+    bool isDead;//判断是否死亡
+    //
+    void ToCurrentGif();
+
+    void CheckMeet();
+    void changeGif(QString newPath);
+    virtual void setCurrentGif();//设计各种情况的图片gif,或许可以利用来进行类继承
+    QTimer *timer;
+signals:
+    void Meet(MyObject *Meeter);
+    void movieFinished();
+    void GameOver();
+
+protected slots:
+    virtual void frameChanged(int frameNumber);
+    virtual void GamePause();
+    virtual void GameContinue();
+};
+
+#endif // MYOBJECT_H
