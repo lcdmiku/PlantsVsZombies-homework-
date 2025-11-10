@@ -322,7 +322,7 @@ void MainScene::PlantAreaGenerate(){
             default:
                 break;
             }
-            PlantArea *area = new PlantArea(landType,moveTimer);
+            PlantArea *area = new PlantArea(i,j,landType,moveTimer);
             area->setPos(QPointF(150 +105 ,90) + QPointF(area->w()*j , area->h()*i));//81,94
             //连接向日葵生成的阳光
             connect(area,&PlantArea::sunlightProduced,this,[=](SunLight *sunlight){

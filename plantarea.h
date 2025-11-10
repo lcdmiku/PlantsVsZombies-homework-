@@ -31,6 +31,8 @@ class PlantArea:public QGraphicsObject
     Q_OBJECT
     int width;
     int height;
+    int row;
+    int col;
     bool isEmpty;
 
     QGraphicsPixmapItem *bg;
@@ -42,13 +44,15 @@ class PlantArea:public QGraphicsObject
     void setEmpty(bool isEmpty){this->isEmpty = isEmpty;}
     void dealLandType();
 public:
-    explicit PlantArea(enum LandType landType = LandType::Nomal,QTimer *bulletTimer = nullptr);
+    explicit PlantArea(int row,int col,enum LandType landType = LandType::Nomal,QTimer *bulletTimer = nullptr);
     // 必须实现的虚函数
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     //static int sunlightGenerate();
     int w(){return width;}
     int h(){return height;}
+    int r(){return row;}
+    int c(){return col;}
     bool checkEmpty(){return isEmpty;}
     ~PlantArea();
 

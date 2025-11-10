@@ -3,12 +3,12 @@
 #include<QMimeData>
 #include<iostream>
 
-PlantArea::PlantArea(enum LandType landType,QTimer *bulletTimer)
-    :width(81),height(94),isEmpty(true),landType(landType),bg(nullptr),Myplant(nullptr),bulletTimer(bulletTimer)
+PlantArea::PlantArea(int row,int col,enum LandType landType,QTimer *bulletTimer)
+    :width(81),height(94),isEmpty(true),landType(landType),bg(nullptr),Myplant(nullptr),bulletTimer(bulletTimer),row(row),col(col)
 {
    setAcceptHoverEvents(true); // 关键：允许接收悬停事件
     setAcceptDrops(true); // 启用拖放
-   dealLandType();
+    dealLandType();
     connect(this,&PlantArea::GameOver,this,&QGraphicsObject::deleteLater);
 
 }
