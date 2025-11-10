@@ -7,7 +7,6 @@
 #include <QRandomGenerator>
 #include<QPropertyAnimation>
 #include<QTimer>
-#include <QGraphicsObject>
 #include<QGraphicsScene>
 
 enum class Type{

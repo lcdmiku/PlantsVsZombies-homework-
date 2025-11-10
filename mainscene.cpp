@@ -219,7 +219,8 @@ void MainScene::GamePre(){
     view->setFixedSize(902, 602);
     view->setRenderHint(QPainter::Antialiasing);
 
-
+    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     view->setCacheMode(QGraphicsView::CacheBackground);
     view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
