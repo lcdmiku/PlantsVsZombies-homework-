@@ -67,6 +67,7 @@ public:
     void ZombieGenerate();
     void cardAvailable();
     void menuInit();
+    void settingInit();
     void GameStart();
     void GamePre();
     void playBGM();

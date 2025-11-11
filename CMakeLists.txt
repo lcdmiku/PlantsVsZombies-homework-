@@ -26,6 +26,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
     qt_add_executable(Game
         MANUAL_FINALIZATION
@@ -64,6 +65,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
         animate.h animate.cpp
         gameleveldata.h gameleveldata.cpp
         dominator.h dominator.cpp
+        coordinate.h coordinate.cpp
 
 
     )
@@ -91,6 +93,7 @@ target_link_libraries(Game PRIVATE Qt6::Core)
 target_link_libraries(Game PRIVATE Qt6::Multimedia)
 target_link_libraries(Game PRIVATE Qt6::Core Qt6::Widgets)
 target_link_libraries(Game PRIVATE Qt6::Widgets)
+target_link_libraries(Game PRIVATE Qt6::Core)
 target_link_libraries(Game PRIVATE Qt6::Core)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
