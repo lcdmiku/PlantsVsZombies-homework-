@@ -23,7 +23,7 @@
 #include"zombie.h"
 #include<QSettings>
 #include"settingsmenu.h"
-
+#include"gameleveldata.h"
 class Dominator;
 
 class GameScene : public QGraphicsScene
@@ -33,6 +33,7 @@ class GameScene : public QGraphicsScene
     Dominator* dominator;
     //外部控件，不跟随gamescene生命周期
     SettingsMenu *settingsMenu;
+    GameLevelData* levelData;
 
     //archive
     QSettings *settings;
@@ -47,7 +48,7 @@ class GameScene : public QGraphicsScene
     //依靠行将控件分组
     QMap<int,QList<Plant*> > plantRow;
     QMap<int,QList<Zombie*> > zombieRow;
-    QMap<int,QList<PlantArea*>> plantAreaRow;
+    QList<QList<PlantArea*>> plantAreaMap;//位置存储各个种植地
 
     //音效
     QMediaPlayer *bgMus;//背景音播放器
@@ -62,9 +63,9 @@ class GameScene : public QGraphicsScene
     void moveBg();
 
 public:
-    explicit GameScene(QObject *parent = nullptr);
+    explicit GameScene(QObject *parent = nullptr,GameLevelData* data = nullptr);
     void PlantAreaGenerate();
-    void ZombieGenerate();
+
     void cardAvailable();
     void menuInit();
     void settingInit();
@@ -77,7 +78,10 @@ public:
 
     void setMenu(SettingsMenu *settingsMenu){settingsMenu = settingsMenu;}
 
-    void plant(enum PlantType plantType);//种植植物
+    //植物与僵尸的生成
+    void ZombieGenerate();
+    void ZombieGenerate(ZombieType zombieType,int row,int x);
+    void plant(enum PlantType plantType,int r,int c);//种植植物
     void move(MyObject* target,QPointF& dest);//移动物体
     void DominatorAct();//处理dominator行动逻辑
 signals:

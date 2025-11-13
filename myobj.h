@@ -74,6 +74,7 @@ protected:
     void CheckMeet();
     void changeGif(QString newPath);
     virtual void setCurrentGif();//设计各种情况的图片gif,或许可以利用来进行类继承
+    void setGif(QString newPath);//
     QTimer *timer;
 signals:
     void Meet(MyObject *Meeter);
