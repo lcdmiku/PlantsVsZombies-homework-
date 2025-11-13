@@ -38,6 +38,8 @@ void PlantArea::dealLandType(){
 
 }
 
+
+
 void PlantArea::plant(enum PlantType plantType){
     Plant *newPlant = nullptr;
 

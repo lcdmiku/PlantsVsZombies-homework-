@@ -86,7 +86,7 @@ void MyObject::frameChanged(int frameNumber){
 }
 
 void MyObject::CheckMeet(){
-    // 假设要检测与Enemy类的碰撞
+    //检测与Enemy类的碰撞
     QList<QGraphicsItem*> collisions = collidingItems();
     foreach (QGraphicsItem* item, collisions) {
         MyObject *obj = dynamic_cast<MyObject*>(item);

@@ -74,7 +74,7 @@ protected:
 
     //
 public:
-    void plant(enum PlantType plantType);
+    void plant(enum PlantType plantType);//种植植物的接口
 };
 
 #endif // PLANTAREA_H

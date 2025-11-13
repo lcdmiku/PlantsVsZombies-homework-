@@ -6,10 +6,10 @@
 #include<QGraphicsItemAnimation>
 #include"dominator.h"
 
-GameScene::GameScene(QObject *parent)
-    : QGraphicsScene(parent),settingsMenu(nullptr),
+GameScene::GameScene(QObject *parent,GameLevelData* data)
+    : QGraphicsScene(parent),settingsMenu(nullptr),levelData(data),
     plantareas(),zombies(),plants(),
-    plantAreaRow(),plantRow(),zombieRow(),
+    plantAreaMap(5,QList<PlantArea*>(9,nullptr)),plantRow(),zombieRow(),
     bgPath(":/res/GameRes/images/Background.jpg"),gameBg(nullptr),
     dominator(nullptr)
 {
@@ -115,17 +115,6 @@ void GameScene::GamePre(){
     //设置按钮在场景中的位置
     cardDelete_proxy->setPos(900,400);
 
-    // //设置场景移动动画
-    // connect(waveTimer,&QTimer::timeout,this,[=](){
-    //     if(gameBg->x()<0){
-
-    //         gameBg->setPos(gameBg->x()+10,0);
-    //     }
-    //     //selectpalnt
-    //     if(selectPlant->y()>-500){
-    //         selectPlant->setPos(290,selectPlant->y()-10);
-    //     }
-    // });
     //选择结束
     connect(startBtn,&QPushButton::clicked,this,[=](){
         emit GameContinue();
@@ -209,8 +198,14 @@ void GameScene::move(MyObject* target,QPointF& dest){
         Animate(target).move(dest,false);
 }
 
-void GameScene::plant(enum PlantType plantType){
-
+void GameScene::plant(enum PlantType plantType,int r,int c){
+    PlantArea * area = plantAreaMap[r][c];
+    if(area){
+        area->plant(plantType);
+    }
+    else{
+        qDebug()<<"failde to plant";
+    }
 }
 void GameScene::moveBg(){
     int duration = 1000;
@@ -266,7 +261,7 @@ void GameScene::PlantAreaGenerate(){
             PlantArea *area = new PlantArea(i,j,landType);
             //将实例加入集合
             plantareas.push_back(area);
-            plantAreaRow[i].push_back(area);
+            plantAreaMap[i][j] = area;
             //设置位置
             area->setPos(QPointF(150 +105 ,90) + QPointF(area->w()*j , area->h()*i));//81,94
             //连接向日葵生成的阳光
@@ -291,6 +286,7 @@ void GameScene::PlantAreaGenerate(){
     //
     settings->endGroup();
 }
+
 void GameScene::ZombieGenerate(){
     //打开配置文件
     settings->beginGroup("MapInfo");
@@ -329,11 +325,7 @@ void GameScene::ZombieGenerate(){
         this->zombieRow[row].push_back(zombie);
         zombie->setZValue(row);
         addItem(zombie);
-
-        //处理僵尸行走
-        // connect(moveTimer,&QTimer::timeout,zombie,[=](){
-        //     zombie->proceed();
-        // });
+        //僵尸行走
         Animate(zombie).speed(AnimationType::Move,zombie->getSpeed()).move(QPointF(-900,0));
         //处理僵尸胜利的请款
         connect(zombie,&Zombie::zombieSuccess,this,[=](){
@@ -342,6 +334,57 @@ void GameScene::ZombieGenerate(){
         connect(this,&GameScene::GameOver,zombie,&MyObject::GameOver);
     }
 }
+
+void GameScene::ZombieGenerate(ZombieType zombieType,int row,int x){
+    Zombie *zombie=nullptr;
+    switch (zombieType)
+    {
+    case ZombieType::NormalZombie:
+    {
+        zombie = new NomalZombie();
+        break;
+    }
+    case ZombieType::ScreenZombie:
+    {
+        zombie = new ScreenZombie();
+        break;
+    }
+
+    case ZombieType::BucketZombie:
+    {
+        zombie = new BucketZombie();
+        break;
+    }
+    case ZombieType::ConeZombie:
+    {
+        zombie = new ConeZombie();
+        break;
+    }
+    case ZombieType::FootballZombie:
+    {
+        zombie = new FootballZombie();
+        break;
+    }
+    default:
+        break;
+    }
+    if(zombie)
+    {
+        zombie->setPos(QPointF(0 ,120) + QPointF(x ,94*row));
+        zombies.push_back(zombie);
+        this->zombieRow[row].push_back(zombie);
+        zombie->setZValue(row);
+        addItem(zombie);
+        //僵尸行走
+        Animate(zombie).speed(AnimationType::Move,zombie->getSpeed()).move(QPointF(-900,0));
+        //处理僵尸胜利的情况
+        connect(zombie,&Zombie::zombieSuccess,this,[=](){
+
+        });
+        connect(this,&GameScene::GameOver,zombie,&MyObject::GameOver);//与消亡绑定
+    }
+}
+
 void GameScene::cardAvailable(){
     if(selectPlant)
     {
