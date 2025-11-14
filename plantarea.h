@@ -54,6 +54,7 @@ public:
     int r(){return row;}
     int c(){return col;}
     bool checkEmpty(){return isEmpty;}
+    void removePlant();
     ~PlantArea();
 
 signals:

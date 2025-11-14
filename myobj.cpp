@@ -123,7 +123,8 @@ void MyObject::ToCurrentGif(){
 MyObject::~MyObject(){
     emit needToDel();
     disconnect(this);
-
+    gameScene = getGameScene();
+    if(gameScene)gameScene->removeItem(this);
     delete timer;
 }
 void MyObject::GamePause(){

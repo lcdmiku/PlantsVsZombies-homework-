@@ -17,6 +17,9 @@ public:
     //显示阳光值并判断阳光是否足够,重载两份
     bool sunlightValueShow(int sunlightValue,enum PlantType plantType =  PlantType::None);
     bool sunlightValueShow(int sunlightValue);
+    //减少阳光值或增加阳光值
+    void increaseSunlight(int num);
+    void reduceSunlight(int num);
     //添加卡片
     void addCard(QString plantName);
 

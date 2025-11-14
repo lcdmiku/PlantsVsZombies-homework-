@@ -1,11 +1,12 @@
 #include "dominator.h"
 #include"gamescene.h"
 #include"animate.h"
+#include"sunlight.h"
 #include<QDrag>
 #include<QMimeData>
 
 Dominator::Dominator():MyObject(nullptr,QString(":/res/GameRes/images/muliBoki.gif"),Type::Dominator),
-    speed(200),speedRate(1.0)
+    speed(200),speedRate(1.0),coordinate()
 {
     dialog = new DialogBox(this);
     QVector<QString> btnStrs;
@@ -42,7 +43,70 @@ void Dominator::wipeZombie(QPointF pos,int num){
             }
         });
     }
+}
+//种植植物
+void Dominator::plant(enum PlantType plantype,int r,int c){
+    GameScene* gamescene = getGameScene();
+    if(gamescene){
+        PlantArea* area = gamescene->getPlantArea(r,c);
+        if(area){
+            area->plant(plantype);
+        }
+    }
+}
+//铲除植物
+void Dominator::uproot(int r,int c){
+    GameScene* gamescene = getGameScene();
+    if(gamescene){
+        PlantArea* area = gamescene->getPlantArea(r,c);
+        if(area){
+            area->removePlant();
+        }
+    }
+}
+//偷取阳光
+void Dominator::stealSunlight(int num){
+    GameScene* gamescene = getGameScene();
+    if(gamescene){
+        Shop* shop = gamescene->getShop();
+        if(shop){
+            shop->reduceSunlight(num);
+        }
+    }
+}
+void Dominator::stealSunlight(int num,int eachVal){
+    GameScene* gamescene = getGameScene();
+    if(gamescene){
+        Shop* shop = gamescene->getShop();
+        if(shop){
+            QPointF start = shop->pos();
+            QPointF end = pos();
 
+        }
+    }
+}
+//给予阳光
+void Dominator::giveSunlight(int num){
+    GameScene* gamescene = getGameScene();
+    if(gamescene){
+        Shop* shop = gamescene->getShop();
+        if(shop){
+            shop->increaseSunlight(num);
+        }
+    }
+}
+void Dominator::giveSunlight(int num,int eachVal){
+    GameScene* gamescene = getGameScene();
+    if(gamescene){
+        Shop* shop = gamescene->getShop();
+        if(shop){
+            QPointF start = pos();
+            for (int var = 0; var < num; ++var) {
+                SunLight * sunlight = new SunLight(eachVal);
+                gamescene->addItem(sunlight);
+            }
+        }
+    }
 }
 void Dominator::setCurrentGif(){
 

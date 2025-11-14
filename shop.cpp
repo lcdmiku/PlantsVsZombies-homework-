@@ -56,6 +56,18 @@ bool Shop::sunlightValueShow(int sunlightValue){
     return false;
 
 }
+//减少阳光值或增加阳光值
+void Shop::increaseSunlight(int sunlightValue){
+    totalValue = std::max(totalValue+sunlightValue,0);
+
+    sunlightText->setText(QString::number(totalValue));
+    qDebug()<<QString::number(totalValue)<<' '<<QString::number(sunlightValue);
+    update();
+
+}
+void Shop::reduceSunlight(int sunlightValue){
+    increaseSunlight(-sunlightValue);
+}
 //添加卡片
 void Shop::addCard(QString plantName){
     if(cards.size()<6)

@@ -25,7 +25,25 @@ SunLight::SunLight()
     // connect(this,&SunLight::sunlightCollected,scene()->parent(),)
     // 构造函数实现
 }
+SunLight::SunLight(int sunlightVal)
+    : QGraphicsObject(nullptr),movie(nullptr),sunlightTroughPos(290,0),sunlightValue(sunlightVal) // 初始化两个基类
+{
+    //
+    timer = new QTimer();
+    connect(timer,&QTimer::timeout,this,&QObject::deleteLater);
+    timer->start(20000);//1 min
+    //
+    movie = new QMovie(":/res/GameRes/images/Sun.gif",QByteArray(),this);
+    if(movie->isValid()){
+        movie->setCacheMode(QMovie::CacheAll);
+        connect(movie,&QMovie::frameChanged,this,&SunLight::frameChanged);
 
+        int gen = sunlightValue / 50;
+        movie->setScaledSize(QSize(50*(0.5*gen+0.5),50*(0.5*gen+0.5)));
+
+        movie->start();
+    }
+}
 QRectF SunLight::boundingRect() const{
     if(movie && movie->state() == QMovie::Running){
         return QRectF(0,0,movie->currentPixmap().width(),movie->currentPixmap().height());
@@ -46,8 +64,8 @@ void SunLight::frameChanged(int frameNumber){
     Q_UNUSED(frameNumber);
     update(); // 通知场景重绘此图形项
 }
-
-void SunLight::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+//共外界使用，使用后生成的阳光被收集
+void SunLight::beCollected(){
     isCollected = true;
 
     QPropertyAnimation *animation = new QPropertyAnimation(this,"pos");
@@ -61,7 +79,10 @@ void SunLight::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     connect(animation,&QPropertyAnimation::finished,this,&QObject::deleteLater);
 
     animation->start(QAbstractAnimation::DeleteWhenStopped);
+}
 
+void SunLight::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    beCollected();
 
 }
 void SunLight::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {}
@@ -70,5 +91,6 @@ void SunLight::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {}
 
 SunLight::~SunLight(){
     disconnect(this);
+    if(scene())scene()->removeItem(this);
     delete timer;
 }

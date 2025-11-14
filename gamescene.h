@@ -77,6 +77,13 @@ public:
     void addItem(QGraphicsItem* item);
 
     void setMenu(SettingsMenu *settingsMenu){settingsMenu = settingsMenu;}
+    //得到种植地
+    PlantArea* getPlantArea(int r,int c);
+    //得到商店
+    Shop* getShop(){return shop;}
+    //得到铲子
+    Shovel* getShovel(){return shovel;}
+
 
     //植物与僵尸的生成
     void ZombieGenerate();

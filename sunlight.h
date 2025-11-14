@@ -19,14 +19,17 @@ class SunLight : public QGraphicsObject
     QPointF sunlightTroughPos;
 public:
     explicit SunLight();
+    explicit SunLight(int sunlightVal);//可控制生成阳光数的
     // 必须实现的虚函数
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     //static int sunlightGenerate();
     ~SunLight();
+    void beCollected();//共外界使用，使用后生成的阳光被收集,有可能采集负数，表示阳光被掠夺
 
 signals:
     void sunlightCollected(int sunlightValue);
+
 
 
 // protected:

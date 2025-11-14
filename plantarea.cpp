@@ -106,26 +106,36 @@ void PlantArea::plant(enum PlantType plantType){
 
 // 拖拽事件
 void PlantArea::dropEvent(QGraphicsSceneDragDropEvent *event) {
-//检测数据类型
-if(event->mimeData()->hasFormat("plant/type") && event->mimeData()->hasFormat("plant/cost")){
-    event->setAccepted(true);
-    int plantInt = event->mimeData()->data("plant/type").toInt();
-    int cost = event->mimeData()->data("plant/cost").toInt();
+    //检测数据类型
+    if(event->mimeData()->hasFormat("plant/type") && event->mimeData()->hasFormat("plant/cost")){
+        event->setAccepted(true);
+        int plantInt = event->mimeData()->data("plant/type").toInt();
+        int cost = event->mimeData()->data("plant/cost").toInt();
 
-    enum PlantType plantType = static_cast<enum PlantType>(plantInt);
-    std::cout<<plantInt<<std::endl;
-    if(checkEmpty() && landType != LandType::DryLand )emit needToPlant(cost,plantType);
+        enum PlantType plantType = static_cast<enum PlantType>(plantInt);
+        std::cout<<plantInt<<std::endl;
+        if(checkEmpty() && landType != LandType::DryLand )emit needToPlant(cost,plantType);
 
+    }
+    //shovel/remove
+    if(event->mimeData()->hasFormat("shovel/remove") && Myplant){
+        event->setAccepted(true);
+        removePlant();
+        }
 }
-//shovel/remove
-if(event->mimeData()->hasFormat("shovel/remove") && Myplant){
-    event->setAccepted(true);
-    Myplant->DealDead();
-    Myplant = nullptr;
-    setEmpty(true);
+//移除植物
+void PlantArea::removePlant(){
+    if(Myplant)//避免空指针
+    {
+        Myplant->DealDead();
+        Myplant = nullptr;
+        setEmpty(true);
+    }
+    else{
+        qDebug()<<metaObject()->className()<<"MyPlant is nullptr";
+    }
 }
 
-}
 void PlantArea::dragEnterEvent(QGraphicsSceneDragDropEvent *event) {
     //检测数据类型
     if(event->mimeData()->hasFormat("plant/type")){

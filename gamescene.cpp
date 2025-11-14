@@ -194,15 +194,22 @@ void GameScene::GameStart(){
 void GameScene::move(MyObject* target,QPointF& dest){
         Animate(target).move(dest,false);
 }
-
+//种植植物
 void GameScene::plant(enum PlantType plantType,int r,int c){
-    PlantArea * area = plantAreaMap[r][c];
+    PlantArea * area = getPlantArea(r,c);
     if(area){
         area->plant(plantType);
     }
     else{
         qDebug()<<"failde to plant";
     }
+}
+//获得种植地
+PlantArea* GameScene::getPlantArea(int r,int c){
+    if(r>=0 && c>=0 && r<plantAreaMap.size() && c<plantAreaMap[0].size()){
+        return plantAreaMap[r][c];
+    }
+    return nullptr;
 }
 void GameScene::moveBg(){
     int duration = 1000;
