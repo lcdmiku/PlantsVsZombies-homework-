@@ -1,53 +1,59 @@
 #ifndef GAMELEVELDATA_H
 #define GAMELEVELDATA_H
 #include <QObject>
-
+#include"myobj.h"
 #include <QSettings>
 #include <QString>
 #include <QVariant>
 
-// 关卡数据结构体（方便传递）
-struct LevelData {
-    int levelId;         // 关卡编号
-    bool isUnlocked;     // 是否解锁
-    int highScore;       // 最高分
-    bool isCleared;      // 是否通关
-    double clearTime;    // 通关时间（秒）
-
-    // 默认构造（初始化默认值）
-    LevelData() : levelId(0), isUnlocked(false), highScore(0), isCleared(false), clearTime(0.0) {}
-};
-
-class GameLevelData {
+class GameScene;
+//每个ZombieData代表可能出现的僵尸的信息
+class ZombieData
+{
 public:
-    // 单例模式（全局唯一实例，避免重复打开文件）
-    static GameLevelData* instance();
-
-    // 写入单个关卡数据
-    void writeLevelData(const LevelData& data);
-
-    // 读取单个关卡数据（不存在则返回默认值）
-    LevelData readLevelData(int levelId);
-
-    // 解锁指定关卡
-    void unlockLevel(int levelId);
-
-    // 更新关卡最高分（仅当新分数更高时更新）
-    void updateHighScore(int levelId, int newScore);
-
-    // 标记关卡为通关，并记录通关时间
-    void markLevelCleared(int levelId, double clearTime);
-
-private:
-    // 私有构造（单例模式）
-    GameLevelData();
-
-    // 生成 INI 文件中对应的分组名（如 "Level1"）
-    QString getLevelGroupName(int levelId) const;
-
-    QSettings m_settings; // QSettings 实例（自动管理文件）
-
+    enum ZombieType eName;//储存该关卡出现的僵尸种类
+    QList<int> waveList;//按顺序存储每波出现个数
 };
+
+class GameLevelData
+{
+public:
+    GameLevelData();
+    virtual ~GameLevelData() {}
+
+    QString eName, cName;//关卡序号及名称
+
+    QList<QString> pName;//可供选择的植物
+    int sunProb;//阳光生成可能性，0-100
+    QList<int> mowerRow;//各行小推车情况
+    QString backgroundImage;//背景图片路径
+    bool hasShovel;//是否有shovel
+    int maxSelectedCards;//最大可选择卡片数
+
+
+    int waveNum;//波数
+    QList<int> waveDuration;//每一波持续时间/s
+    QList<int> largeWaveFlag;//“即将有大批僵尸进攻”（幻听），表示比较大的wave的序号
+    // QPair<QList<int>, QList<int> > flagToSumNum;
+    QMap<int, std::function<void(GameScene *)> > flagToMonitor;//每波到达后所触发的函数
+
+    QList<ZombieData> zombieData;//各类僵尸信息
+
+    QString backgroundMusic;//背景音乐路径
+
+    virtual void loadData(GameScene *gameScene);
+    virtual void startGame(GameScene *gameScene);
+    virtual void endGame(GameScene *gameScene);
+};
+
+class GameLevelData_1: public GameLevelData
+{
+
+public:
+    GameLevelData_1();
+};
+
+GameLevelData * GameLevelDataFactory(const QString &eName);
 
 
 #endif // GAMELEVELDATA_H

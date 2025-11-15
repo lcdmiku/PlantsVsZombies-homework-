@@ -8,17 +8,25 @@
 Dominator::Dominator():MyObject(nullptr,QString(":/res/GameRes/images/muliBoki.gif"),Type::Dominator),
     speed(200),speedRate(1.0),coordinate()
 {
-    dialog = new DialogBox(this);
+    dialog = new DialogBox(this);//dialg 随dominator添加到场景中
     QVector<QString> btnStrs;
-    btnStrs.push_back("hahahaha");
-    dialog->setDialog("MuliMuli......",btnStrs);
+    QVector<int> btnIds;
+    btnStrs.push_back("haha");
+    btnStrs.push_back("111");
+    btnIds.push_back(1);
+    btnIds.push_back(2);
+    dialog->setDialog("MuliMuli......",btnStrs,btnIds);
     connect(dialog,&DialogBox::branchTriggered,this,[=](int id){
-        if(id==0)stealSunlight(10,50);
+        if(id==1){
+            stealSunlight(10,50);
+        }
+        if(id==2)giveSunlight(10,50);
+        dialog->hide();
     });
 }
 //显示要说的话
-void Dominator::setDialog(QString info,QVector<QString> btnStrs){
-    dialog->setDialog(info,btnStrs);
+void Dominator::setDialog(QString info,QVector<QString> btnStrs,QVector<int> btnIds){
+    dialog->setDialog(info,btnStrs,btnIds);
 }
 //僵尸生成
 void Dominator::ZombieGenerate(ZombieType zombieType,int row,int x){

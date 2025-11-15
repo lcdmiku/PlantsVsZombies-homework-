@@ -2,15 +2,35 @@
 #include<QGraphicsSceneMouseEvent>
 
 DialogBox::DialogBox(QGraphicsObject *parent) : QGraphicsWidget(parent),
-    remain(25),w(350),h(120),borderWidth(30)
+    remain(25),w(350),h(120),borderWidth(30),cnt(0)//正向计时，显示时倒数
 {
     // 加载边框图片（提前准备好边框资源）
     if(parent)
         setPos(-w/4.0,-(h+remain)-parent->boundingRect().height()/2);
     setMinimumSize(w, h+remain);  // 最小尺寸，轻量化控制
     PixInit();
+    timer = new QTimer(this);
+    timer->setInterval(1000);//1s
     // this->hide();
+    connect(timer,&QTimer::timeout,this,[=](){
+        cnt = (++cnt);
+        if(cnt==8){
+            if(!m_branchBtns.empty())//emit signal if have btn
+            emit branchTriggered(m_branchBtns[0].branchId);
+            timer->stop();
+        }
+        update();
+    });
 
+}
+void DialogBox::startTiming(){
+    cnt = 0;
+    if(timer->isActive())timer->stop();
+    timer->start();
+}
+void DialogBox::endTiming(){
+    cnt = 0;
+    if(timer->isActive())timer->stop();
 }
 //borderInit has buttonPix Init
 void DialogBox::PixInit(){
@@ -34,12 +54,28 @@ void DialogBox::PixInit(){
     linePix.load(":/res/GameRes/images/interface/dialog_line.png");
 
 }
-void DialogBox::btnsGenerate(const QVector<QString>& btnStrs){
-    //
-    m_branchBtns.clear();
-    for(int i=0;i<btnStrs.size();i++){
-        m_branchBtns.push_back(BranchBtn(btnStrs[i],i));
+//得到场景数据
+GameScene* DialogBox::getGameScene(){
+    GameScene *gameScene = dynamic_cast<GameScene*>(this->scene());
+    if(!gameScene){
+        qDebug()<<"gameScene 转化失败，无法获得游戏场景数据";
+    }//一般类实例初始化时还没加入场景，所以不能在这时候初始化gamescene,另外写函数
+    return gameScene;
+}
+void DialogBox::btnsGenerate(const QVector<QString>& btnStrs,const QVector<int>& btnIds){
+    //调试，两个数组的size需要保持一致
+    if(btnStrs.size() != btnIds.size()){
+        qDebug()<<metaObject()->className()<<"btnStrs btnIds have different size,failed to btnsGenerate";
+        return;
     }
+        m_branchBtns.clear();
+        for(int i=0;i<btnStrs.size();i++){
+            m_branchBtns.push_back(BranchBtn(btnStrs[i],btnIds[i]));//
+        }
+        if(!btnStrs.empty()){
+            startTiming();//开始倒计时
+        }
+
 }
 QVector<QPointF> DialogBox::getTrianglePoints(){
     QVector<QPointF> triangle;
@@ -61,11 +97,11 @@ void DialogBox::DrawLine(QPainter *painter,QPointF& p1,QPointF& p2,QPixmap& pix)
     painter->drawPixmap(0,0,width,length,pix);//先使用button的图片将就一下
     painter->restore();
 }
-void DialogBox::setDialog(QString text, const QVector<QString>& btnStrs,QString avatarPath) {
+void DialogBox::setDialog(QString text, const QVector<QString>& btnStrs,const QVector<int>& btnIds,QString avatarPath) {
     if(!avatarPath.isEmpty())
     m_avatarPixmap.load(avatarPath);
     m_dialogText = text;
-    btnsGenerate(btnStrs);
+    btnsGenerate(btnStrs,btnIds);
     update();  // 刷新绘制
 }
 
@@ -127,6 +163,10 @@ void DialogBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         painter->setFont(QFont("微软雅黑", 15));
         painter->drawText(btn.rect, Qt::AlignCenter, btn.text);
     }
+    //显示倒计时
+    if(!m_branchBtns.empty()){
+        painter->drawText(m_branchBtns[0].rect, Qt::AlignBottom | Qt::AlignRight, QString::number(8-cnt));
+    }
 }
 void DialogBox::resizeEvent(QGraphicsSceneResizeEvent *event){
 
@@ -135,6 +175,8 @@ void DialogBox::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     // 检测点击是否命中按键
     for (auto &btn : m_branchBtns) {
         if (btn.rect.contains(event->pos())) {
+            //停止计时
+            endTiming();
             emit branchTriggered(btn.branchId);
             qDebug()<<"clicked"<<btn.branchId<<"button";
             break;

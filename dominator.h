@@ -24,7 +24,7 @@ public:
 
     //
     void showUp();//出场画面
-    void setDialog(QString info,QVector<QString> btnStrs);//显示要说的话
+    void setDialog(QString info,QVector<QString> btnStrs,QVector<int> btnIds);//显示要说的话
     void ZombieGenerate(ZombieType zombieType,int row,int x);//召唤僵尸
     void wipeZombie(QPointF pos,int num=1);//移除僵尸,默认移除1个
     void plant(enum PlantType plantype,int r,int c);//种植植物
@@ -37,6 +37,7 @@ public:
     void unPlantabel(QPointF pos,QString path);//使某个地方无法种植,path 是无法种植地方覆盖物的图片路径
     //小推车
     void removeMower(int r);
+    void addMower(int r);
     void gameOver();//处理游戏结束结局
 
     //模拟用户行为

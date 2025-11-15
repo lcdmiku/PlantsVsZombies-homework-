@@ -197,5 +197,42 @@
         <file>GameRes/images/interface/dialog_bottommiddle_thin.png</file>
         <file>GameRes/images/interface/dialog_bottomright_thin.png</file>
         <file>GameRes/images/interface/dialog_line.png</file>
+        <file>GameRes/audio/awooga.wav</file>
+        <file>GameRes/audio/bleep.wav</file>
+        <file>GameRes/audio/chomp.wav</file>
+        <file>GameRes/audio/chompsoft.wav</file>
+        <file>GameRes/audio/dirt_rise.mp3</file>
+        <file>GameRes/audio/Faster.mp3</file>
+        <file>GameRes/audio/firepea.wav</file>
+        <file>GameRes/audio/frozen.wav</file>
+        <file>GameRes/audio/grassstep.wav</file>
+        <file>GameRes/audio/groan1.wav</file>
+        <file>GameRes/audio/groan2.wav</file>
+        <file>GameRes/audio/groan3.wav</file>
+        <file>GameRes/audio/groan4.wav</file>
+        <file>GameRes/audio/groan5.wav</file>
+        <file>GameRes/audio/groan6.wav</file>
+        <file>GameRes/audio/ignite.wav</file>
+        <file>GameRes/audio/ignite2.wav</file>
+        <file>GameRes/audio/lawnmower.wav</file>
+        <file>GameRes/audio/Look_up_at_the_Sky.mp3</file>
+        <file>GameRes/audio/losemusic.mp3</file>
+        <file>GameRes/audio/plant1.wav</file>
+        <file>GameRes/audio/plant2.wav</file>
+        <file>GameRes/audio/plastichit.wav</file>
+        <file>GameRes/audio/points.wav</file>
+        <file>GameRes/audio/polevault.wav</file>
+        <file>GameRes/audio/readysetplant.mp3</file>
+        <file>GameRes/audio/seedlift.wav</file>
+        <file>GameRes/audio/shieldhit.wav</file>
+        <file>GameRes/audio/shieldhit2.wav</file>
+        <file>GameRes/audio/shovel.wav</file>
+        <file>GameRes/audio/siren.wav</file>
+        <file>GameRes/audio/splat1.wav</file>
+        <file>GameRes/audio/splat2.wav</file>
+        <file>GameRes/audio/splat3.wav</file>
+        <file>GameRes/audio/tap.wav</file>
+        <file>GameRes/audio/UraniwaNi.mp3</file>
+        <file>GameRes/audio/winmusic.mp3</file>
     </qresource>
 </RCC>

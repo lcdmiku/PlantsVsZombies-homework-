@@ -2,6 +2,7 @@
 #include<QDebug>
 #include<QMimeData>
 #include<iostream>
+#include"gamescene.h"
 
 PlantArea::PlantArea(int row,int col,enum LandType landType)
     :MyObject(nullptr),
@@ -100,6 +101,8 @@ void PlantArea::plant(enum PlantType plantType){
 
         Myplant = newPlant;
         setEmpty(false);
+        //播放音效
+        playSoundEffect("qrc:/res/GameRes/audio/plant1.wav");
     }
 }
 
@@ -128,9 +131,10 @@ void PlantArea::dropEvent(QGraphicsSceneDragDropEvent *event) {
 void PlantArea::removePlant(){
     if(Myplant)//避免空指针
     {
+        playSoundEffect("qrc:/res/GameRes/audio/tap.wav");
         Myplant->DealDead();
         Myplant = nullptr;
-        setEmpty(true);
+        setEmpty(true);  
     }
     else{
         qDebug()<<metaObject()->className()<<"MyPlant is nullptr";

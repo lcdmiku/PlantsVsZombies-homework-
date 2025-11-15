@@ -7,12 +7,18 @@
 #include"dominator.h"
 
 GameScene::GameScene(QObject *parent,GameLevelData* data)
-    : QGraphicsScene(parent),settingsMenu(nullptr),levelData(data),
+    : QGraphicsScene(parent),settingsMenu(nullptr),levelData(data),moment(0),
     plantareas(),zombies(),plants(),
     plantAreaMap(5,QList<PlantArea*>(9,nullptr)),plantRow(),zombieRow(),
-    bgPath(":/res/GameRes/images/Background.jpg"),gameBg(nullptr),
+    bgPath(data->backgroundImage),gameBg(nullptr),
+    bgMus(new QMediaPlayer(this)),audioOutput(new QAudioOutput(this)),
     dominator(nullptr)
 {
+    //检查gameleveldata是否为空,若为空，输出问题并退出
+    if(!levelData){
+        qDebug()<<"gameleveldata is nullptr,failed to create gamescene";
+        deleteLater();
+    }
     //archive
     settings = new QSettings("config.ini",QSettings::IniFormat);
     settingInit();
@@ -27,7 +33,13 @@ GameScene::GameScene(QObject *parent,GameLevelData* data)
     addItem(gameBg);
     dominator = new Dominator();
     addItem(dominator);
-
+    //音效
+    audioOutput->setVolume(0.5);
+    bgMus->setAudioOutput(audioOutput);
+    bgMus->setLoops(-1);
+    connect(settingsMenu,&SettingsMenu::volumeChanged,this,[=](int volume){
+        audioOutput->setVolume(double(volume)/100);
+    });
     // coo = new Coordinate(0);
 
 
@@ -35,6 +47,9 @@ GameScene::GameScene(QObject *parent,GameLevelData* data)
     waveTimer = new QTimer(this);
     waveTimer->start(1000);
     waveTimer->stop();
+    connect(waveTimer,&QTimer::timeout,this,[=](){
+        moment++;//记录游戏已经进行的时间
+    });
 }
 void GameScene::settingInit(){
     // 如果配置中没有 MapInfo 节，写入默认配置（以 QVariantList 格式写入，便于后续 .toList() 读取）
@@ -67,20 +82,15 @@ void GameScene::menuInit(){
             emit GameOver();//退出就结束游戏
     });
 }
-
-void GameScene::playBGM(){
-    //背景音乐
-    bgMus = new QMediaPlayer(this);
-    audioOutput = new QAudioOutput(this);
-    audioOutput->setVolume(0.5);
-    connect(settingsMenu,&SettingsMenu::volumeChanged,this,[=](int volume){
-        audioOutput->setVolume(double(volume)/100);
-    });
-    bgMus->setAudioOutput(audioOutput);
-    bgMus->setSource(QUrl("qrc:/res/GameRes/GrazyDave2.mp3"));
-    bgMus->setLoops(-1);
+//背景音乐
+void GameScene::playBGM(const QString& BgmPath){
+    bgMus->blockSignals(true);
+    bgMus->stop();
+    bgMus->blockSignals(false);
+    bgMus->setSource(QUrl(BgmPath));//设置背景音
     bgMus->play();
 }
+
 //处理dominator行动逻辑
 void GameScene::DominatorAct(){
     if(!dominator)return;
@@ -152,18 +162,13 @@ void GameScene::GamePre(){
     });
     shop->setPos(290, 0);//商店位置
 }
-void GameScene::GameStart(){
-    //dominator
-    DominatorAct();
-    //shovel
-    shovel->setPos(shovel->getStartPos());
-
-    //sunlight generate
+//处理阳光生成
+void GameScene::sunlightGenerate(int prob){
     connect(waveTimer,&QTimer::timeout,this,[=](){
-        int gen = QRandomGenerator::global()->bounded(1,20);
+        int gen = QRandomGenerator::global()->bounded(1,100);
         int x = QRandomGenerator::global()->generateDouble()*this->width();
         int y = QRandomGenerator::global()->generateDouble()*this->height();
-        if(gen == 1){
+        if(gen <= prob){
             SunLight *sunlight = new SunLight;
             sunlight->setPos(x,y);
             //仅仅收集阳光使用bool(int)
@@ -174,6 +179,18 @@ void GameScene::GameStart(){
             connect(this,&GameScene::GameOver,sunlight,&QGraphicsObject::deleteLater);
         }
     });
+}
+//进行游戏阶段
+void GameScene::GameStart(){
+    //背景音
+    playBGM(levelData->backgroundMusic);
+    //dominator
+    DominatorAct();
+    //shovel
+    shovel->setPos(shovel->getStartPos());
+
+    //sunlight generate
+    sunlightGenerate();
 
     //zombie generate
     QMetaObject::Connection Conn;
@@ -190,6 +207,8 @@ void GameScene::GameStart(){
 
     //plantarea
     PlantAreaGenerate();
+    //mower
+    mowerGenerate();
 
     //zombie generate
     ZombieGenerate();
@@ -214,6 +233,7 @@ PlantArea* GameScene::getPlantArea(int r,int c){
     }
     return nullptr;
 }
+//移动背景动画
 void GameScene::moveBg(){
     int duration = 1000;
     int hz = 10;
@@ -237,20 +257,28 @@ void GameScene::moveBg(){
     });
     timeLine->start();
 }
+//生成小推车
+void GameScene::mowerGenerate(){
+    //
+    for(int i=0;i<5;i++){
+        QList MowerRow = levelData->mowerRow;
+        //Mower
+        if(MowerRow[i]==1){
+            Mower *mower = new Mower();
+            mower->setPos(QPointF(150 +105 ,120) + QPointF(-20 ,94*i));
+            addItem(mower);
+            connect(this,&GameScene::GameOver,mower,&MyObject::GameOver);
+        }
+    }
+
+}
+//生成种植地
 void GameScene::PlantAreaGenerate(){
     //打开配置文件
     settings->beginGroup("MapInfo");
     //
     for(int i=0;i<5;i++){
         QVariantList MapRow = settings->value(QString("row%1").arg(i)).toList();
-        QVariantList MowerRow = settings->value(QString("MowerRow")).toList();
-        //Mower
-        if(MowerRow[i].toInt()){
-            Mower *mower = new Mower();
-            mower->setPos(QPointF(150 +105 ,120) + QPointF(-20 ,94*i));
-            addItem(mower);
-            connect(this,&GameScene::GameOver,mower,&MyObject::GameOver);
-        }
         for(int j=0;j<9;j++){
             enum LandType landType = LandType::None;
             switch (MapRow[j].toInt()) {
@@ -293,7 +321,7 @@ void GameScene::PlantAreaGenerate(){
     //
     settings->endGroup();
 }
-
+//生成僵尸
 void GameScene::ZombieGenerate(){
     //打开配置文件
     settings->beginGroup("MapInfo");
@@ -391,19 +419,17 @@ void GameScene::ZombieGenerate(ZombieType zombieType,int row,int x){
         connect(this,&GameScene::GameOver,zombie,&MyObject::GameOver);//与消亡绑定
     }
 }
-
+//给selectpanel加载卡片
 void GameScene::cardAvailable(){
     if(selectPlant)
     {
-        selectPlant->addCard(":/res/GameRes/images/WallNut.png");
-        selectPlant->addCard(":/res/GameRes/images/Peashooter.png");
-        selectPlant->addCard(":/res/GameRes/images/SunFlower.png");
-        selectPlant->addCard(":/res/GameRes/images/CherryBomb.png");
-        selectPlant->addCard(":/res/GameRes/images/PotatoMine.png");
-        selectPlant->addCard(":/res/GameRes/images/SnowPea.png");
+        for (int var = 0; var < levelData->pName.size(); ++var) {
+            QString path = ":/res/GameRes/images/" + levelData->pName[var] + ".png";
+            selectPlant->addCard(path);
+        }
     }
 }
-
+//添加元素到gamescene
 void GameScene::addItem(QGraphicsItem* item){
     QGraphicsScene::addItem(item);
 }
@@ -415,6 +441,24 @@ void GameScene::addItem(MyObject* item){
     connect(this,&GameScene::GameOver,item,&MyObject::GameOver);
 }
 
+//播放短时音效
+void playSoundEffect(const QString& soundPath){
+    QMediaPlayer* player = new QMediaPlayer;
+    QAudioOutput* audioOutput = new QAudioOutput;
+
+    audioOutput->setVolume(0.5);
+
+    player->setAudioOutput(audioOutput);
+    player->setSource(soundPath);
+    player->play();
+    //内存管理
+    QMediaPlayer::connect(player, &QMediaPlayer::playbackStateChanged, player, [=](QMediaPlayer::PlaybackState state) {
+        if (state == QMediaPlayer::StoppedState) {
+            player->deleteLater();
+            audioOutput->deleteLater();
+        }
+    });
+}
 //调试用
 // void GameScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
 //     if(event->button() == Qt::LeftButton){

@@ -4,6 +4,7 @@
 #include <QGraphicsWidget>
 #include <QPainter>
 #include <QVector>
+#include "gamescene.h"
 
 class DialogBox : public QGraphicsWidget {
     Q_OBJECT
@@ -16,7 +17,7 @@ public:
     };
 
     explicit DialogBox(QGraphicsObject *parent = nullptr);
-    void setDialog( QString text, const QVector<QString>& btnStrs = QVector<QString>(),QString avatarPath="");  // 设置对话内容,默认立绘为空,外部输入btnstr，内部自处理
+    void setDialog( QString text, const QVector<QString>& btnStrs = QVector<QString>(),const QVector<int>& btnIds = QVector<int>(),QString avatarPath="");  // 设置对话内容,默认立绘为空,外部输入btnstr，内部自处理
 
 signals:
     void branchTriggered(int BtnId);  // 分支触发信号
@@ -56,10 +57,18 @@ private:
 // 角色头像
     QPixmap m_avatarPixmap;
     void PixInit();
-
-    QString m_dialogText;    // 对话文本
-    QVector<BranchBtn> m_branchBtns;  // 互动按键
-    void btnsGenerate(const QVector<QString>& btnStrs);
+// 对话文本
+    QString m_dialogText;
+// 互动按键
+    QVector<BranchBtn> m_branchBtns;
+    void btnsGenerate(const QVector<QString>& btnStrs,const QVector<int>& btnIds);
+//记录按键已经显现的时间，超时(8s)未点击，自动发送0
+    QTimer* timer;
+    int cnt;
+    void startTiming();
+    void endTiming();
+//得到场景数据函数
+    GameScene* getGameScene();
 };
 
 

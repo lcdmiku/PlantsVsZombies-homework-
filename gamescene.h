@@ -61,14 +61,15 @@ class GameScene : public QGraphicsScene
     //背景
     QString bgPath;
     QGraphicsPixmapItem *gameBg;
-    //QTimer
+    //QTimer 控制游戏时间
     QTimer *waveTimer;
+    int moment;//记录游戏已经进行的时间
 
     void moveBg();/*
     Coordinate* coo;*/
 
 public:
-    explicit GameScene(QObject *parent = nullptr,GameLevelData* data = nullptr);
+    explicit GameScene(QObject *parent = nullptr,GameLevelData* data = new GameLevelData_1());
     void PlantAreaGenerate();
 
     void cardAvailable();
@@ -76,7 +77,7 @@ public:
     void settingInit();
     void GameStart();
     void GamePre();
-    void playBGM();
+    void playBGM(const QString& BgmPath);
     //函数
     void addItem(MyObject* item);
     void addItem(QGraphicsItem* item);
@@ -88,7 +89,8 @@ public:
     Shop* getShop(){return shop;}
     //得到铲子
     Shovel* getShovel(){return shovel;}
-
+    //得到游戏已经进行的时间
+    int getMoment(){return moment;}
 
     //植物与僵尸的生成
     void ZombieGenerate();
@@ -96,7 +98,10 @@ public:
     void plant(enum PlantType plantType,int r,int c);//种植植物
     void move(MyObject* target,QPointF& dest);//移动物体
     void DominatorAct();//处理dominator行动逻辑
-
+    //处理阳光生成
+    void sunlightGenerate(int prob=20);//每秒生成阳光的可能性 prob%,0-100
+    //处理小推车生成
+    void mowerGenerate();
     // void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 signals:
     void GameOver();
@@ -106,4 +111,6 @@ signals:
     
 };
 
+//播放短时音效
+void playSoundEffect(const QString& soundPath);
 #endif // GAMESCENE_H
