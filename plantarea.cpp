@@ -112,6 +112,7 @@ void PlantArea::dropEvent(QGraphicsSceneDragDropEvent *event) {
         int plantInt = event->mimeData()->data("plant/type").toInt();
         int cost = event->mimeData()->data("plant/cost").toInt();
 
+<<<<<<< HEAD
         enum PlantType plantType = static_cast<enum PlantType>(plantInt);
         std::cout<<plantInt<<std::endl;
         if(checkEmpty() && landType != LandType::DryLand )emit needToPlant(cost,plantType);
@@ -122,6 +123,11 @@ void PlantArea::dropEvent(QGraphicsSceneDragDropEvent *event) {
         event->setAccepted(true);
         removePlant();
         }
+=======
+    enum PlantType plantType = static_cast<enum PlantType>(plantInt);
+    std::cout<<plantInt<<std::endl;
+    if(checkEmpty() && landType != LandType::DryLand )emit needToPlant(cost,plantType);
+>>>>>>> 36e7054f90b86dde74797e5677584954250b4cb2
 }
 //移除植物
 void PlantArea::removePlant(){
@@ -161,8 +167,6 @@ void PlantArea::dragLeaveEvent(QGraphicsSceneDragDropEvent *event) {
         // qDebug() << "Drag leave";
     }
 }
-
-
 
 
 

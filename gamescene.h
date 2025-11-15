@@ -24,6 +24,10 @@
 #include<QSettings>
 #include"settingsmenu.h"
 #include"gameleveldata.h"
+
+#include<QGraphicsSceneMouseEvent>
+#include "coordinate.h"
+
 class Dominator;
 
 class GameScene : public QGraphicsScene
@@ -60,7 +64,8 @@ class GameScene : public QGraphicsScene
     //QTimer
     QTimer *waveTimer;
 
-    void moveBg();
+    void moveBg();/*
+    Coordinate* coo;*/
 
 public:
     explicit GameScene(QObject *parent = nullptr,GameLevelData* data = nullptr);
@@ -91,6 +96,8 @@ public:
     void plant(enum PlantType plantType,int r,int c);//种植植物
     void move(MyObject* target,QPointF& dest);//移动物体
     void DominatorAct();//处理dominator行动逻辑
+
+    // void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 signals:
     void GameOver();
     void GamePause();

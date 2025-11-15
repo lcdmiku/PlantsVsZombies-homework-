@@ -28,6 +28,9 @@ GameScene::GameScene(QObject *parent,GameLevelData* data)
     dominator = new Dominator();
     addItem(dominator);
 
+    // coo = new Coordinate(0);
+
+
     //QTimer
     waveTimer = new QTimer(this);
     waveTimer->start(1000);
@@ -412,3 +415,16 @@ void GameScene::addItem(MyObject* item){
     connect(this,&GameScene::GameOver,item,&MyObject::GameOver);
 }
 
+//调试用
+// void GameScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
+//     if(event->button() == Qt::LeftButton){
+//         qDebug() << event->scenePos().x() << event->scenePos().y();
+//         qreal x = event->scenePos().x();
+//         qreal y = event->scenePos().y();
+//         qDebug() << "col" << coo->getCol(x);
+//         qDebug() << "row" << coo->getRow(y);
+//         qDebug() << "centerX" << coo->getX(coo->getCol(x));
+//         qDebug() << "centerY" << coo->getY(coo->getRow(y));
+//     }
+//     QGraphicsScene::mousePressEvent(event);
+// }
