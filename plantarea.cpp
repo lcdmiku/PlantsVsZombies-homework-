@@ -115,7 +115,6 @@ if(event->mimeData()->hasFormat("plant/type") && event->mimeData()->hasFormat("p
     enum PlantType plantType = static_cast<enum PlantType>(plantInt);
     std::cout<<plantInt<<std::endl;
     if(checkEmpty() && landType != LandType::DryLand )emit needToPlant(cost,plantType);
-
 }
 //shovel/remove
 if(event->mimeData()->hasFormat("shovel/remove") && Myplant){
@@ -151,8 +150,6 @@ void PlantArea::dragLeaveEvent(QGraphicsSceneDragDropEvent *event) {
         // qDebug() << "Drag leave";
     }
 }
-
-
 
 
 
