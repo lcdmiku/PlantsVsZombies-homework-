@@ -3,7 +3,8 @@
 
 
 SunLight::SunLight()
-    : QGraphicsObject(nullptr),movie(nullptr),sunlightTroughPos(290,0),sunlightValue(0) // 初始化两个基类
+    : QGraphicsObject(nullptr),movie(nullptr),sunlightTroughPos(290,0),sunlightValue(0), // 初始化两个基类
+    clickable(true)
 {
     //
     timer = new QTimer();
@@ -38,7 +39,7 @@ SunLight::SunLight(int sunlightVal)
         movie->setCacheMode(QMovie::CacheAll);
         connect(movie,&QMovie::frameChanged,this,&SunLight::frameChanged);
 
-        int gen = sunlightValue / 50;
+        int gen = abs(sunlightValue) / 50;
         movie->setScaledSize(QSize(50*(0.5*gen+0.5),50*(0.5*gen+0.5)));
 
         movie->start();
@@ -82,6 +83,7 @@ void SunLight::beCollected(){
 }
 
 void SunLight::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    if(clickable)
     beCollected();
 
 }
@@ -91,6 +93,6 @@ void SunLight::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {}
 
 SunLight::~SunLight(){
     disconnect(this);
-    if(scene())scene()->removeItem(this);
+    if(scene())scene()->removeItem(this);//
     delete timer;
 }

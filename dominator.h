@@ -35,6 +35,8 @@ public:
     void giveSunlight(int num,int eachVal);//有动画效果，生成num个阳光，每个阳光的值为eachVal
     void setCoverage();//类似于护眼模式
     void unPlantabel(QPointF pos,QString path);//使某个地方无法种植,path 是无法种植地方覆盖物的图片路径
+    //小推车
+    void removeMower(int r);
     void gameOver();//处理游戏结束结局
 
     //模拟用户行为

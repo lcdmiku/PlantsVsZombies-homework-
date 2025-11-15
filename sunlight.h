@@ -17,6 +17,7 @@ class SunLight : public QGraphicsObject
     bool isCollected;
     int sunlightValue;
     QPointF sunlightTroughPos;
+    bool clickable;
 public:
     explicit SunLight();
     explicit SunLight(int sunlightVal);//可控制生成阳光数的
@@ -26,6 +27,8 @@ public:
     //static int sunlightGenerate();
     ~SunLight();
     void beCollected();//共外界使用，使用后生成的阳光被收集,有可能采集负数，表示阳光被掠夺
+    void setClickable(bool isClickable){clickable = isClickable;}
+    void setsunlightTroughPos(QPointF pos){sunlightTroughPos = pos;}//设置阳光结束位置
 
 signals:
     void sunlightCollected(int sunlightValue);

@@ -150,7 +150,7 @@ void GameScene::GamePre(){
         if(shop)shop->clearCards();
         selectPlant->reSet();
     });
-    shop->setPos(290, 0);
+    shop->setPos(290, 0);//商店位置
 }
 void GameScene::GameStart(){
     //dominator

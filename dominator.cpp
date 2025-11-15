@@ -12,6 +12,9 @@ Dominator::Dominator():MyObject(nullptr,QString(":/res/GameRes/images/muliBoki.g
     QVector<QString> btnStrs;
     btnStrs.push_back("hahahaha");
     dialog->setDialog("MuliMuli......",btnStrs);
+    connect(dialog,&DialogBox::branchTriggered,this,[=](int id){
+        if(id==0)stealSunlight(10,50);
+    });
 }
 //显示要说的话
 void Dominator::setDialog(QString info,QVector<QString> btnStrs){
@@ -79,9 +82,19 @@ void Dominator::stealSunlight(int num,int eachVal){
     if(gamescene){
         Shop* shop = gamescene->getShop();
         if(shop){
-            QPointF start = shop->pos();
             QPointF end = pos();
-
+            for (int var = 0; var < num; ++var) {
+                QPointF start = shop->pos() + QPointF(var,var);//（290，0）
+                SunLight * sunlight = new SunLight(-eachVal);//设置为负数，表示掠夺
+                sunlight->setClickable(false);//设置为不可点击
+                gamescene->addItem(sunlight);
+                sunlight->setPos(start);
+                sunlight->setsunlightTroughPos(end);
+                QTimer::singleShot(1000 + var * var*10,sunlight,[=](){//使用var * var*10控制动画效果
+                    sunlight->beCollected();
+                    shop->reduceSunlight(eachVal);//shop逻辑
+                });//1s后被全部统一收集
+            }
         }
     }
 }
@@ -100,10 +113,17 @@ void Dominator::giveSunlight(int num,int eachVal){
     if(gamescene){
         Shop* shop = gamescene->getShop();
         if(shop){
-            QPointF start = pos();
+
             for (int var = 0; var < num; ++var) {
+                QPointF start = pos() + QPointF(var,var);
                 SunLight * sunlight = new SunLight(eachVal);
+                sunlight->setClickable(false);//设置为不可点击
                 gamescene->addItem(sunlight);
+                sunlight->setPos(start);
+                QTimer::singleShot(1000+ var * var*10,sunlight,[=](){
+                    sunlight->beCollected();
+                    shop->increaseSunlight(eachVal);//shop逻辑
+                });//1s后被全部统一收集
             }
         }
     }
