@@ -37,6 +37,7 @@ class GameScene : public QGraphicsScene
     Dominator* dominator;
     //外部控件，不跟随gamescene生命周期
     SettingsMenu *settingsMenu;
+    //
     GameLevelData* levelData;
 
     //archive
@@ -63,6 +64,9 @@ class GameScene : public QGraphicsScene
     QGraphicsPixmapItem *gameBg;
     //QTimer 控制游戏时间
     QTimer *waveTimer;
+    int currWave;//记录已经是第几波
+
+    int waveMoment;//记录当前波已经进行的时间
     int moment;//记录游戏已经进行的时间
 
     void moveBg();/*
@@ -70,6 +74,7 @@ class GameScene : public QGraphicsScene
 
 public:
     explicit GameScene(QObject *parent = nullptr,GameLevelData* data = new GameLevelData_1());
+    ~GameScene();
     void PlantAreaGenerate();
 
     void cardAvailable();
@@ -91,10 +96,13 @@ public:
     Shovel* getShovel(){return shovel;}
     //得到游戏已经进行的时间
     int getMoment(){return moment;}
+    //得到当前wave
+    int getCurrWave(){return currWave;}
 
     //植物与僵尸的生成
     void ZombieGenerate();
     void ZombieGenerate(ZombieType zombieType,int row,int x);
+    void ZombieGenerate(int currwave);//根据当前波数生成僵尸
     void plant(enum PlantType plantType,int r,int c);//种植植物
     void move(MyObject* target,QPointF& dest);//移动物体
     void DominatorAct();//处理dominator行动逻辑
@@ -103,10 +111,15 @@ public:
     //处理小推车生成
     void mowerGenerate();
     // void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    //处理进入下一波
+    void setNextWave();
 signals:
     void GameOver();
     void GamePause();
     void GameContinue();
+    void GameSuccess(bool isOk);//胜利或者不胜利都记录在内
+    void waveStart(int currWave);
+    void nextWave();//强制性下一波
 
     
 };

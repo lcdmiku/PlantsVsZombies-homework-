@@ -7,7 +7,8 @@
 #include"dominator.h"
 
 GameScene::GameScene(QObject *parent,GameLevelData* data)
-    : QGraphicsScene(parent),settingsMenu(nullptr),levelData(data),moment(0),
+    : QGraphicsScene(parent),settingsMenu(nullptr),levelData(data),
+    moment(0),currWave(0),waveMoment(0),
     plantareas(),zombies(),plants(),
     plantAreaMap(5,QList<PlantArea*>(9,nullptr)),plantRow(),zombieRow(),
     bgPath(data->backgroundImage),gameBg(nullptr),
@@ -27,9 +28,9 @@ GameScene::GameScene(QObject *parent,GameLevelData* data)
     addItem(shop);
     selectPlant = new SelectPlant();//选择板
     addItem(selectPlant);
-    shovel = new Shovel;//铲子
+    shovel = new Shovel;//铲子,在~GameScene中delete
     addItem(shovel);
-    gameBg = new QGraphicsPixmapItem(QPixmap(bgPath));
+    gameBg = new QGraphicsPixmapItem(QPixmap(bgPath));//背景，在~GameScene中delete
     addItem(gameBg);
     dominator = new Dominator();
     addItem(dominator);
@@ -47,9 +48,30 @@ GameScene::GameScene(QObject *parent,GameLevelData* data)
     waveTimer = new QTimer(this);
     waveTimer->start(1000);
     waveTimer->stop();
+    //强制性下一波
+    connect(this,&GameScene::nextWave,this,[=](){
+        setNextWave();
+    });
     connect(waveTimer,&QTimer::timeout,this,[=](){
         moment++;//记录游戏已经进行的时间
+        waveMoment++;
+        //当前波结束，开始下一波计时
+        if(currWave < levelData->waveNum && waveMoment>=levelData->waveDuration[currWave]){
+            setNextWave();
+        }
+
     });
+}
+//处理进入下一波
+void GameScene::setNextWave(){
+    waveMoment = 0;
+    currWave++;
+    emit waveStart(currWave);//发送当前波开始的信号
+    qDebug()<<"now the"<<currWave<<"-th wave";
+    //当全部结束，标志胜利
+    if(currWave>=levelData->waveNum){
+        emit GameSuccess(true);
+    }
 }
 void GameScene::settingInit(){
     // 如果配置中没有 MapInfo 节，写入默认配置（以 QVariantList 格式写入，便于后续 .toList() 读取）
@@ -188,22 +210,16 @@ void GameScene::GameStart(){
     DominatorAct();
     //shovel
     shovel->setPos(shovel->getStartPos());
+    if(!levelData->hasShovel)shovel->hide();//如果关卡没有铲子，将铲子隐藏
 
     //sunlight generate
-    sunlightGenerate();
+    sunlightGenerate(levelData->sunProb);
 
-    //zombie generate
-    QMetaObject::Connection Conn;
-    Conn = connect(waveTimer,&QTimer::timeout,this,[=](){
-        int gen = QRandomGenerator::global()->bounded(0,1);//僵尸数量越大，越不用以生成
-        if(gen == 0)
-        {
-            ZombieGenerate();
-        }
+    //每一波开始后
+    connect(this,&GameScene::waveStart,this,[=](int currwave){
+        ZombieGenerate(currwave);
+        levelData->dominatorAct(this);
     });
-
-    //add card
-    //cardADD();
 
     //plantarea
     PlantAreaGenerate();
@@ -212,6 +228,8 @@ void GameScene::GameStart(){
 
     //zombie generate
     ZombieGenerate();
+    //第0波开始
+    emit waveStart(0);
 }
 void GameScene::move(MyObject* target,QPointF& dest){
         Animate(target).move(dest,false);
@@ -266,6 +284,7 @@ void GameScene::mowerGenerate(){
         if(MowerRow[i]==1){
             Mower *mower = new Mower();
             mower->setPos(QPointF(150 +105 ,120) + QPointF(-20 ,94*i));
+            mower->setZValue(-1);
             addItem(mower);
             connect(this,&GameScene::GameOver,mower,&MyObject::GameOver);
         }
@@ -296,7 +315,7 @@ void GameScene::PlantAreaGenerate(){
             PlantArea *area = new PlantArea(i,j,landType);
             //将实例加入集合
             plantareas.push_back(area);
-            plantAreaMap[i][j] = area;
+            plantAreaMap[i][j] = area;//TODO
             //设置位置
             area->setPos(QPointF(150 +105 ,90) + QPointF(area->w()*j , area->h()*i));//81,94
             //连接向日葵生成的阳光
@@ -331,7 +350,7 @@ void GameScene::ZombieGenerate(){
     int index = QRandomGenerator::global()->bounded(0,zombieRow.size());//随机1到5行
     int row = zombieRow[index].toInt();
     //
-    double y = 100 + row*94;
+    double y = 100 + row*94;//
     int offsetX = QRandomGenerator::global()->bounded(0,100);//避免僵尸同时出现，用距离控制时间
     QPointF start(this->width()+200+offsetX,y);
     // QPointF end(100,y);
@@ -369,7 +388,7 @@ void GameScene::ZombieGenerate(){
         connect(this,&GameScene::GameOver,zombie,&MyObject::GameOver);
     }
 }
-
+//在指定位置生成僵尸
 void GameScene::ZombieGenerate(ZombieType zombieType,int row,int x){
     Zombie *zombie=nullptr;
     switch (zombieType)
@@ -405,7 +424,7 @@ void GameScene::ZombieGenerate(ZombieType zombieType,int row,int x){
     }
     if(zombie)
     {
-        zombie->setPos(QPointF(0 ,120) + QPointF(x ,94*row));
+        zombie->setPos(QPointF(0 ,100) + QPointF(x ,94*row));
         zombies.push_back(zombie);
         this->zombieRow[row].push_back(zombie);
         zombie->setZValue(row);
@@ -417,6 +436,20 @@ void GameScene::ZombieGenerate(ZombieType zombieType,int row,int x){
 
         });
         connect(this,&GameScene::GameOver,zombie,&MyObject::GameOver);//与消亡绑定
+    }
+}
+//根据当前波数生成僵尸
+void GameScene::ZombieGenerate(int currwave){
+    QList<ZombieType> zombies = levelData->zombieExtract(currwave);
+    for (int i = 0; i < zombies.size(); ++i)
+    {
+        int row = QRandomGenerator::global()->bounded(0,5);//随机投发到row行
+        //随机出现时间/s,每波开始后至少6s后再刷新僵尸
+        int showTime = QRandomGenerator::global()->bounded(6,levelData->waveDuration[currwave]);
+        //将僵尸生存时间分开
+        QTimer::singleShot(showTime*1000,this,[=](){
+            ZombieGenerate(zombies[i],row,this->width()+200);
+        }) ;
     }
 }
 //给selectpanel加载卡片
@@ -440,7 +473,11 @@ void GameScene::addItem(MyObject* item){
     connect(this,&GameScene::GameContinue,item,&MyObject::GameContinue);
     connect(this,&GameScene::GameOver,item,&MyObject::GameOver);
 }
-
+//析构函数
+GameScene::~GameScene(){
+    delete shovel;
+    delete gameBg;
+}
 //播放短时音效
 void playSoundEffect(const QString& soundPath){
     QMediaPlayer* player = new QMediaPlayer;
@@ -459,6 +496,7 @@ void playSoundEffect(const QString& soundPath){
         }
     });
 }
+
 //调试用
 // void GameScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
 //     if(event->button() == Qt::LeftButton){
