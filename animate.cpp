@@ -3,20 +3,11 @@
 QHash<MyObject*,QPropertyAnimation*> Animate::moveAnim;
 QHash<MyObject*,QPropertyAnimation*> Animate::scaleAnim;
 QHash<MyObject*,QPropertyAnimation*> Animate::opacityAnim;
+QHash<MyObject*,Animate::Animation*> Animate::animation;
 
 //注意：：每次调用都意味着要给出完整动画，不能想当然与之前的动画关联（Animate使用指针版除外）
-Animate::Animate(MyObject* target,GameScene* scene):
-    type(0),
-    m_duration_m(0),m_duration_s(0),m_duration_o(0)
-    , m_speed_m(20),m_speed_s(20),m_speed_o(20),
-    toPos(), toScale(0), toOpacity(0),
-    m_shape_m(QEasingCurve::Linear),
-    m_shape_s(QEasingCurve::Linear),
-    m_shape_o(QEasingCurve::Linear),
-    target(target), scene(scene),
-    interval_m(50),cnt_m(0),
-    interval_s(50),cnt_s(0),
-    interval_o(50),cnt_o(0)
+Animate::Animate(MyObject* target):
+    target(target)
 {//
     if(!moveAnim.contains(target) || !scaleAnim.contains(target) || !opacityAnim.contains(target)){
         //仅在第一次target建立动画时绑定，后续无法绑定,管理哈希表，防止野指针
@@ -26,13 +17,16 @@ Animate::Animate(MyObject* target,GameScene* scene):
                              moveAnim.remove(target);
                              scaleAnim.remove(target);
                              opacityAnim.remove(target);
+                             animation.remove(target);
                          });
+
     }
     //管理哈希表，防止野指针
     if(moveAnim.contains(target))anim_m = moveAnim[target];
     else{
         anim_m = new QPropertyAnimation(target,"pos",target);
         moveAnim.insert(target,anim_m);
+
     }
     //
     if(scaleAnim.contains(target))anim_s = scaleAnim[target];
@@ -47,6 +41,12 @@ Animate::Animate(MyObject* target,GameScene* scene):
         opacityAnim.insert(target,anim_o);
 
     }
+    if(animation.contains(target))anim = animation[target];
+    else{
+        anim = new Animation();
+        animation.insert(target,anim);
+
+    }
     // QObject::connect(anim_m,&QPropertyAnimation::valueChanged,[=](){
     //     cnt_m = (cnt_m+1) % interval_m;
     //     if(cnt_m==0)emit m_timeout();
@@ -54,6 +54,18 @@ Animate::Animate(MyObject* target,GameScene* scene):
 
     //
 
+}
+QPropertyAnimation* Animate::getAnim(enum AnimationType animType){
+    switch (animType) {
+    case AnimationType::Move:
+        return anim_m;
+    case AnimationType::Scale:
+        return anim_s;
+    case AnimationType::Opacity:
+        return anim_o;
+    default:
+        return nullptr;
+    }
 }
 Animate::~Animate(){
     //内存管理留给QT父指针制度
@@ -65,6 +77,7 @@ Animate::~Animate(){
     // opacityAnim.remove(target);
 }
 Animate& Animate::move(QPointF toPos,bool asDir){
+    AnimateParam& param = anim->params[AnimationType::Move];
     //暂停动画，防止错乱
     if(anim_m->state() == QAbstractAnimation::Running){
         anim_m->stop();
@@ -73,20 +86,20 @@ Animate& Animate::move(QPointF toPos,bool asDir){
     QPointF currPos = target->pos();
 
     //分两种情况，toPos是dir或者是dest
-    this->toPos = asDir ? currPos + toPos : toPos;
+    param.toPos = asDir ? currPos + toPos : toPos;
 
     //
     //可以用速度计算出来
-    if(m_duration_m<=0)
+    if(param.duration<=0)
     {
-        QPointF posVec = this->toPos - currPos;
-        m_duration_m = std::max(1,qRound(qSqrt(QPointF::dotProduct(posVec, posVec)) / m_speed_m) * 1000);// p/s
+        QPointF posVec = param.toPos - currPos;
+        param.duration = std::max(10,qRound(qSqrt(QPointF::dotProduct(posVec, posVec)) / param.speed) * 1000);// p/s
     }
 
     anim_m->setStartValue(currPos);
-    anim_m->setEndValue(this->toPos);
-    anim_m->setDuration(m_duration_m);
-    anim_m->setEasingCurve(m_shape_m);
+    anim_m->setEndValue(param.toPos);
+    anim_m->setDuration(param.duration);
+    anim_m->setEasingCurve(param.shape);
 
     if (anim_m->state() == QAbstractAnimation::Paused) {
         // qDebug()<<"pause resume"<<currPos;
@@ -95,54 +108,56 @@ Animate& Animate::move(QPointF toPos,bool asDir){
         // qDebug()<<"stop resume"<<currPos;
         anim_m->start();
     }
-    m_duration_m = 0;//确保下次用speed计算
+    param.duration = 0;//确保下次用speed计算
     return *this;
 }
 Animate& Animate::scale(qreal toScale){
+    AnimateParam& param = anim->params[AnimationType::Scale];
     //暂停动画，防止错乱
     if(anim_s->state() == QAbstractAnimation::Running){
         anim_s->pause();
     }
     //重新设置各项属性
     qreal currScale = target->scale();
-    this->toScale = toScale;
+    param.toScale = toScale;
 
     if (anim_s->state() == QAbstractAnimation::Running) {
         //动画正在运行,直接更新属性，不停止
-        anim_s->setEndValue(this->toScale);
-        anim_s->setDuration(m_duration_s);
-        anim_s->setEasingCurve(m_shape_s);
+        anim_s->setEndValue(param.toScale);
+        anim_s->setDuration(param.duration);
+        anim_s->setEasingCurve(param.shape);
     } else  {
         //从头开始
         anim_s->setStartValue(currScale);
-        anim_s->setEndValue(this->toScale);
-        anim_s->setDuration(m_duration_s);
-        anim_s->setEasingCurve(m_shape_s);
+        anim_s->setEndValue(param.toScale);
+        anim_s->setDuration(param.duration);
+        anim_s->setEasingCurve(param.shape);
 
         anim_s->start();
     }
     return *this;
 }
 Animate& Animate::fade(qreal toOpacity){
+    AnimateParam& param = anim->params[AnimationType::Opacity];
     //暂停动画，防止错乱
     if(anim_o->state() == QAbstractAnimation::Running){
         anim_o->pause();
     }
     //重新设置各项属性
-    this->toOpacity = toOpacity;
+    param.toOpacity = toOpacity;
     qreal currOpacity = target->opacity();
 
     if (anim_o->state() == QAbstractAnimation::Running) {
         //动画正在运行,直接更新属性，不停止
-        anim_o->setEndValue(this->toOpacity);
-        anim_o->setDuration(m_duration_o);
-        anim_o->setEasingCurve(m_shape_o);
+        anim_o->setEndValue(param.toOpacity);
+        anim_o->setDuration(param.duration);
+        anim_o->setEasingCurve(param.shape);
     } else  {
         //从头开始
         anim_o->setStartValue(currOpacity);
-        anim_o->setEndValue(this->toOpacity);
-        anim_o->setDuration(m_duration_o);
-        anim_o->setEasingCurve(m_shape_o);
+        anim_o->setEndValue(param.toOpacity);
+        anim_o->setDuration(param.duration);
+        anim_o->setEasingCurve(param.shape);
 
         anim_o->start();
     }
@@ -154,89 +169,52 @@ Animate& Animate::replace(){
     return *this;
 }
 Animate& Animate::shape(enum AnimationType animType,QEasingCurve::Type shape){
-    switch (animType) {
-    case AnimationType::Move:
-        m_shape_m = shape;
-        break;
-    case AnimationType::Scale:
-        m_shape_s = shape;
-        break;
-    case AnimationType::Opacity:
-        m_shape_o = shape;
-        break;
-    default:
-        break;
+    if(animType != AnimationType::All)
+    {
+        AnimateParam& param = anim->params[animType];
+        param.shape = shape;
     }
     return *this;
 }
-Animate& Animate::setInterval(enum AnimationType animType,int interval){
-    switch (animType) {
-    case AnimationType::Move:
-        interval_m = interval;
-        break;
-    case AnimationType::Scale:
-        interval_s = interval;;
-        break;
-    case AnimationType::Opacity:
-        interval_o = interval;;
-        break;
-    default:
-        break;
-    }
-    return *this;
-}
+
 Animate& Animate::speed(enum AnimationType animType,qreal speed){
-    switch (animType) {
-    case AnimationType::Move:
-        m_speed_m = speed;
-        break;
-    case AnimationType::Scale:
-        m_speed_s = speed;
-        break;
-    case AnimationType::Opacity:
-        m_speed_o = speed;
-        break;
-    default:
-        break;
+    if(animType != AnimationType::All)
+    {
+        AnimateParam& param = anim->params[animType];
+        param.speed = speed;
     }
     return *this;
 }
 Animate& Animate::duration(enum AnimationType animType,int duration){
 
-    switch (animType) {
-    case AnimationType::Move:
-        m_duration_m = duration;
-        break;
-    case AnimationType::Scale:
-        m_duration_s = duration;
-        break;
-    case AnimationType::Opacity:
-        m_duration_o = duration;
-        break;
-    default:
-        break;
+    if(animType != AnimationType::All)
+    {
+        AnimateParam& param = anim->params[animType];
+        param.duration = duration;
     }
     return *this;
 }
 
-Animate& Animate::finish(enum AnimationType animType,std::function<void(void)> functor){
-    switch (animType) {
-    case AnimationType::Move:
-        if(target->pos() == toPos && anim_m->state()==QAbstractAnimation::Stopped){functor();}
-        break;
-    case AnimationType::Scale:
-        if(target->scale() == toScale && anim_s->state()==QAbstractAnimation::Stopped){functor();}
-        break;
-    case AnimationType::Opacity:
-        if(target->opacity() == toOpacity && anim_o->state()==QAbstractAnimation::Stopped){functor();}
-        break;
-    default:
-        break;
+Animate& Animate::finish(enum AnimationType animType,std::function<void(bool)> func){
+    AnimateParam& param = anim->params[animType];
+    param.finished = func;
+    QPropertyAnimation* animInst = getAnim(animType);
+    if (animInst) {
+        QObject::disconnect(animInst, &QPropertyAnimation::finished, nullptr, nullptr);
+        QObject::connect(animInst, &QPropertyAnimation::finished, animInst, [this, animType, func,animInst]() {
+            QObject::disconnect(animInst, &QPropertyAnimation::finished, nullptr, nullptr);//一次性
+            func(true);
+        });
     }
+
     return *this;
 }
-Animate& Animate::finish(enum AnimationType animType,std::function<void(bool)>){
-    return *this;
+Animate& Animate::finish(enum AnimationType animType,std::function<void(void)> func){
+    return finish(animType, [func](bool) {
+        if (func) {
+            func();
+        }
+    });
 }
 
 Animate& Animate::pause(enum AnimationType animType){
@@ -246,8 +224,6 @@ Animate& Animate::pause(enum AnimationType animType){
     case AnimationType::Move:
         if(anim_m->state() == QAbstractAnimation::Running)
         {
-
-
             anim_m->pause();
             qDebug()<<"pause22"<<anim_m->state();
         }
@@ -303,8 +279,6 @@ Animate& Animate::resume(enum AnimationType animType){
 
         if(anim_s->state() == QAbstractAnimation::Paused)
         {
-
-
             anim_s->resume();
         }
         if(anim_s->state()==QAbstractAnimation::Stopped)
@@ -331,22 +305,10 @@ Animate& Animate::resume(enum AnimationType animType){
     }
     return *this;
 }
-Animate& Animate::trigger(enum AnimationType animType,std::function<void(void)> functor,int interval){
+Animate& Animate::trigger(enum AnimationType animType,std::function<void(void)> functor){
 
     if(target){
         functor();
     }
     return *this;
-}
-
-void Animate::onTargetDestroyed(QObject* target){
-    if (!target) return;
-
-    MyObject* myTarget = qobject_cast<MyObject*>(target);
-    if (!myTarget) return;
-    // 从三个哈希表中移除对应条目
-    qDebug()<<"ok";
-    moveAnim.remove(myTarget);
-    scaleAnim.remove(myTarget);
-    opacityAnim.remove(myTarget);
 }

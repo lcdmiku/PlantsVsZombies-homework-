@@ -19,12 +19,14 @@ protected:
     Coordinate coordinate;
 
 public:
+    //get
     Dominator();
     virtual void setCurrentGif();//设计各种情况的图片gif,或许可以利用来进行类继承
 
     //
     void showUp();//出场画面
-    void setDialog(QString info,QVector<QString> btnStrs,QVector<int> btnIds);//显示要说的话
+    void setDialog(QString info,const QVector<QString>& btnStrs = QVector<QString>(),const QVector<int>& btnIds = QVector<int>());//显示要说的话
+    void hideDialog();//隐藏对话框
     void ZombieGenerate(ZombieType zombieType,int row,int x);//召唤僵尸
     void wipeZombie(QPointF pos,int num=1);//移除僵尸,默认移除1个
     void plant(enum PlantType plantype,int r,int c);//种植植物
@@ -41,9 +43,13 @@ public:
     void gameOver();//处理游戏结束结局
 
     //模拟用户行为
+    //随机游走
+    void randomWalk();
+    void stopRandomWalk();//停止随机游走
     void simulateDrag(QPointF pos,QPointF toPos,QPixmap pixmap);//模拟拖拽
 
-
+signals:
+    void branchTriggered(int id);
 };
 
 #endif // DOMINATOR_H

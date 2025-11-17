@@ -94,6 +94,8 @@ public:
     Shop* getShop(){return shop;}
     //得到铲子
     Shovel* getShovel(){return shovel;}
+    //得到dominator
+    Dominator* getDominator(){return dominator;}
     //得到游戏已经进行的时间
     int getMoment(){return moment;}
     //得到当前wave

@@ -72,7 +72,7 @@ void Zombie::stopMoving() {
 
 void Zombie::continueMoving() {
     movable = true;
-    Animate(this).speed(AnimationType::Move,speed).move(QPointF(-900,0));
+    Animate(this).speed(AnimationType::Move,speed).move(QPointF(-1000,0));
 }
 
 // QRectF Zombie::boundingRect() const{

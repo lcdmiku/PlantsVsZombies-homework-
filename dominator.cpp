@@ -6,27 +6,72 @@
 #include<QMimeData>
 
 Dominator::Dominator():MyObject(nullptr,QString(":/res/GameRes/images/muliBoki.gif"),Type::Dominator),
-    speed(200),speedRate(1.0),coordinate()
+    speed(150),speedRate(1.0),coordinate()
 {
     dialog = new DialogBox(this);//dialg 随dominator添加到场景中
-    QVector<QString> btnStrs;
-    QVector<int> btnIds;
-    btnStrs.push_back("haha");
-    btnStrs.push_back("111");
-    btnIds.push_back(1);
-    btnIds.push_back(2);
-    dialog->setDialog("MuliMuli......",btnStrs,btnIds);
+    dialog->hide();
+    connect(dialog,&DialogBox::branchTriggered,this,&Dominator::branchTriggered);//给外界留接口
+    // QVector<QString> btnStrs;
+    // QVector<int> btnIds;
+    // btnStrs.push_back("haha");
+    // btnStrs.push_back("111");
+    // btnStrs.push_back("11");
+    // btnIds.push_back(1);
+    // btnIds.push_back(2);
+    // btnIds.push_back(3);
+    // dialog->setDialog("MuliMuli......",btnStrs,btnIds);
     connect(dialog,&DialogBox::branchTriggered,this,[=](int id){
-        if(id==1){
-            stealSunlight(10,50);
+        if(id==0){
+            QTimer::singleShot(100,this,[=](){
+                setDialog("连本小姐都不认识~真是无知的杂鱼");
+                QTimer::singleShot(1000,this,[=](){
+                    setDialog("听好了,我可是");
+                    QTimer::singleShot(700,this,[=](){
+                        setDialog("这个世界上最强的植物娘，万人敬仰的斯戈蕊（scary）大人~",{"我管你是谁呢！"},{1});
+                    });
+                });
+            });
+
         }
-        if(id==2)giveSunlight(10,50);
-        dialog->hide();
+        if(id==1){
+            hideDialog();
+        }
+        if(id==3)randomWalk();
+        hideDialog();
     });
 }
+//随机游走
+void Dominator::randomWalk(){
+
+    int row = QRandomGenerator::global()->bounded(0,5);
+    int col = QRandomGenerator::global()->bounded(0,9);
+    int x = coordinate.getX(col);
+    int y = coordinate.getY(row);
+    qDebug()<<"x:"<<x<<"y:"<<y;
+    Animate(this).speed(AnimationType::Move,speed * speedRate).move(QPointF(x,y),false)
+        .finish(AnimationType::Move,[=](){
+        qDebug()<<"random again";
+        QTimer::singleShot(1000,this,[=]{
+            randomWalk();
+        });
+    });
+}
+//停止随机游走
+void Dominator::stopRandomWalk(){
+    Animate(this).stop(AnimationType::Move);
+}
 //显示要说的话
-void Dominator::setDialog(QString info,QVector<QString> btnStrs,QVector<int> btnIds){
+void Dominator::setDialog(QString info,const QVector<QString>& btnStrs,const QVector<int>& btnIds){
     dialog->setDialog(info,btnStrs,btnIds);
+    if (!dialog->isVisible()) {
+        dialog->show();
+    }
+}
+//隐藏对话框
+void Dominator::hideDialog(){
+    if (dialog->isVisible()) {
+        dialog->hide();
+    }
 }
 //僵尸生成
 void Dominator::ZombieGenerate(ZombieType zombieType,int row,int x){

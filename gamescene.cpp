@@ -227,7 +227,7 @@ void GameScene::GameStart(){
     mowerGenerate();
 
     //zombie generate
-    ZombieGenerate();
+    // ZombieGenerate();
     //第0波开始
     emit waveStart(0);
 }
@@ -293,14 +293,11 @@ void GameScene::mowerGenerate(){
 }
 //生成种植地
 void GameScene::PlantAreaGenerate(){
-    //打开配置文件
-    settings->beginGroup("MapInfo");
-    //
     for(int i=0;i<5;i++){
-        QVariantList MapRow = settings->value(QString("row%1").arg(i)).toList();
+        QList MapRow = levelData->map[i];
         for(int j=0;j<9;j++){
             enum LandType landType = LandType::None;
-            switch (MapRow[j].toInt()) {
+            switch (MapRow[j]) {
             case 0:{
                 landType = LandType::Nomal;
                 break;
@@ -337,8 +334,6 @@ void GameScene::PlantAreaGenerate(){
 
         }
     }
-    //
-    settings->endGroup();
 }
 //生成僵尸
 void GameScene::ZombieGenerate(){

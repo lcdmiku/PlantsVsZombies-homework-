@@ -5,7 +5,7 @@
 #include <QSettings>
 #include <QString>
 #include <QVariant>
-
+class Dominator;
 class GameScene;
 //每个ZombieData代表可能出现的僵尸的信息
 class ZombieData
@@ -30,7 +30,7 @@ public:
     QString backgroundImage;//背景图片路径
     bool hasShovel;//是否有shovel
     int maxSelectedCards;//最大可选择卡片数
-    QList<QList<int>> map;//记录地图 0： 无法种植 1：普通绿地 2：水池 3：屋顶类需要花盆才能种植的地方 。。。
+    QList<QList<int>> map;//记录地图 0：普通绿地  1：无法种植 2：水池 3：屋顶类需要花盆才能种植的地方 。。。
 
 
 
@@ -43,6 +43,7 @@ public:
     // QPair<QList<int>, QList<int> > flagToSumNum;
     QMap<int, std::function<void(GameScene *)> > flagToMonitor;//每波到达后所触发的函数
 
+    //
 
     QList<ZombieData> zombieData;//各类僵尸信息
 

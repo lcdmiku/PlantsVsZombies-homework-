@@ -138,10 +138,10 @@ void DialogBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     painter->drawPixmap(borderWidth+10, borderWidth+10, 40, 40, m_avatarPixmap.scaled(40,40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     //绘制对话文本
-    QRectF textRect = QRectF(borderWidth+60, borderWidth+10, widgetRect.width()-80, 80);
+    QRectF textRect = QRectF(0,0, w, h);
     painter->setPen(Qt::white);
     painter->setFont(QFont("微软雅黑", 15));
-    painter->drawText(textRect, Qt::TextWordWrap, m_dialogText);
+    painter->drawText(textRect, Qt::TextWordWrap | Qt::AlignCenter, m_dialogText);
 
     // 绘制互动按键（底部）
     int btnY = widgetRect.height() - remain;//按键放在预留处
@@ -159,12 +159,13 @@ void DialogBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                             buttonPix);
 
         // 按键文本
-        painter->setPen(Qt::yellow);
-        painter->setFont(QFont("微软雅黑", 15));
+        painter->setPen(Qt::white);
+        painter->setFont(QFont("微软雅黑", 10));
         painter->drawText(btn.rect, Qt::AlignCenter, btn.text);
     }
     //显示倒计时
     if(!m_branchBtns.empty()){
+        painter->setFont(QFont("微软雅黑", 10));
         painter->drawText(m_branchBtns[0].rect, Qt::AlignBottom | Qt::AlignRight, QString::number(8-cnt));
     }
 }
