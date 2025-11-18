@@ -64,30 +64,31 @@ void GameLevelData::waveTotWeightInit(){
 }
 //处理每一波dominator的行动逻辑
 void GameLevelData::dominatorAct(GameScene *gameScene){
-    if(!gameScene)return;
-    int currwave = gameScene->getCurrWave();
-    Dominator* role = gameScene->getDominator();
+    // if(!gameScene)return;
+    // int currwave = gameScene->getCurrWave();
+    // Dominator* role = gameScene->getDominator();
 
-    switch (currwave) {
-    case 0:{
-        //1
-        QTimer::singleShot(1000,role,[=](){
-            role->setDialog("有趣的小杂鱼~偏偏喜欢在有这么多恶心虫子的草坪上睡觉~");
-            //2
-            QTimer::singleShot(2000,role,[=](){
-                QVector<QString> btnStrs;
-                QVector<int> btnIds;
-                btnStrs.push_back("你谁啊");
-                btnIds.push_back(0);
-                role->setDialog("本小姐都不知道怎么把你叫醒~",btnStrs,btnIds);
-            });
-        });
+    // switch (currwave) {
+    // case 0:{
+    //     //1
+    //     QTimer::singleShot(1000,role,[=](){
+    //         role->setDialog("有趣的小杂鱼~偏偏喜欢在有这么多恶心虫子的草坪上睡觉~");
+    //         //2
+    //         QTimer::singleShot(2000,role,[=](){
+    //             QVector<QString> btnStrs;
+    //             QVector<int> btnIds;
+    //             btnStrs.push_back("你谁啊");
+    //             btnIds.push_back(0);
+    //             role->setDialog("本小姐都不知道怎么把你叫醒~",btnStrs,btnIds);
+    //         });
+    //     });
 
-        break;
-    }
-    default:
-        break;
-    }
+    //     break;
+    // }
+    // default:
+    //     break;
+    // }
+    //将相关逻辑放入dominator类
 }
 
 void  GameLevelData::loadData(GameScene *gameScene)

@@ -50,6 +50,7 @@ class GameScene : public QGraphicsScene
     QList<PlantArea*> plantareas;
     QList<Plant*> plants;
     QList<Zombie*> zombies;
+    QMap<int,Mower*> mowers;
     //依靠行将控件分组
     QMap<int,QList<Plant*> > plantRow;
     QMap<int,QList<Zombie*> > zombieRow;
@@ -97,6 +98,8 @@ public:
     //得到dominator
     Dominator* getDominator(){return dominator;}
     //得到游戏已经进行的时间
+    //得到小推车的Map引用
+    QMap<int,Mower*>& getMowers(){return mowers;}
     int getMoment(){return moment;}
     //得到当前wave
     int getCurrWave(){return currWave;}

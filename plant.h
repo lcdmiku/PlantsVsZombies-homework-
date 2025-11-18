@@ -18,13 +18,19 @@ public:
     virtual void Attacted(int hurt);
     virtual void DealDead();
     ~Plant();
-
+    //给gamescene和dominato等大手用
+    void setBulletSpeedRate(qreal rate){bulletSpeedRate = rate;}
+    void setBulletPowerRate(qreal rate){bulletPowerRate = rate;}
 signals:
     void findZombie(MyObject *zombie);
     void dead();
 
 protected:
     int currentHp;//
+    //控制植物生成子弹的速度加成与攻击加成，对有子弹的植物起作用
+    qreal bulletSpeedRate;
+    qreal bulletPowerRate;
+
     QGraphicsItem *m_detectArea;
     QTimer *m_detectTimer;
     //植物行为特征

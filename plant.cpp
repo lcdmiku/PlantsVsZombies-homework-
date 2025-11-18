@@ -3,7 +3,8 @@
 #include"sunlight.h"
 
 Plant::Plant(QGraphicsObject *parent,QString objPath,int duration)
-    :MyObject(parent,objPath,Type::PLANT),hp(duration),m_detectArea(nullptr),m_detectTimer(nullptr)
+    :MyObject(parent,objPath,Type::PLANT),hp(duration),m_detectArea(nullptr),m_detectTimer(nullptr),
+    bulletPowerRate(1.0),bulletSpeedRate(1.0)
 {
     currentHp = hp;
 }

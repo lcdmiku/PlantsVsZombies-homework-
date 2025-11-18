@@ -13,6 +13,12 @@ class Dominator : public MyObject
     Q_OBJECT
     int speed;//移动速度
     qreal speedRate;//当前配速与speed的比值，默认为1
+
+    //用于创建不同关卡的dominator行为逻辑,只在初始化时使用
+    virtual void waveEvent();//响应波次到达
+    virtual void btnEvent();//响应按键event
+    bool eventInit;
+
 protected:
     DialogBox *dialog;
     QGraphicsPixmapItem *attachment;//附带图片
@@ -22,7 +28,7 @@ public:
     //get
     Dominator();
     virtual void setCurrentGif();//设计各种情况的图片gif,或许可以利用来进行类继承
-
+    void initEvent();//事件初始化
     //
     void showUp();//出场画面
     void setDialog(QString info,const QVector<QString>& btnStrs = QVector<QString>(),const QVector<int>& btnIds = QVector<int>());//显示要说的话
@@ -38,8 +44,9 @@ public:
     void setCoverage();//类似于护眼模式
     void unPlantabel(QPointF pos,QString path);//使某个地方无法种植,path 是无法种植地方覆盖物的图片路径
     //小推车
-    void removeMower(int r);
+    void releaseMower(int r);
     void addMower(int r);
+    //
     void gameOver();//处理游戏结束结局
 
     //模拟用户行为
@@ -48,8 +55,11 @@ public:
     void stopRandomWalk();//停止随机游走
     void simulateDrag(QPointF pos,QPointF toPos,QPixmap pixmap);//模拟拖拽
 
+
+
 signals:
     void branchTriggered(int id);
+    void waveStart(int currWave);
 };
 
 #endif // DOMINATOR_H

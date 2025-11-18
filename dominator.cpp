@@ -6,7 +6,7 @@
 #include<QMimeData>
 
 Dominator::Dominator():MyObject(nullptr,QString(":/res/GameRes/images/muliBoki.gif"),Type::Dominator),
-    speed(150),speedRate(1.0),coordinate()
+    speed(150),speedRate(1.0),coordinate(),eventInit(false)
 {
     dialog = new DialogBox(this);//dialg 随dominator添加到场景中
     dialog->hide();
@@ -20,6 +20,46 @@ Dominator::Dominator():MyObject(nullptr,QString(":/res/GameRes/images/muliBoki.g
     // btnIds.push_back(2);
     // btnIds.push_back(3);
     // dialog->setDialog("MuliMuli......",btnStrs,btnIds);
+    //
+}
+//事件初始化,需要外界调用
+void Dominator::initEvent(){
+    if(!eventInit)
+    {
+        waveEvent();
+        btnEvent();
+        eventInit = true;
+    }
+}
+//用于创建不同关卡的dominator行为逻辑,只在初始化时使用
+//响应波次到达
+void Dominator::waveEvent(){
+    //一段对白的开始
+    connect(this,&Dominator::waveStart,this,[=](int currwave){
+        switch (currwave) {
+        case 0:{
+            //1
+            QTimer::singleShot(1000,this,[=](){
+                setDialog("有趣的小杂鱼~偏偏喜欢在有这么多恶心虫子的草坪上睡觉~");
+                //2
+                QTimer::singleShot(2000,this,[=](){
+                    QVector<QString> btnStrs;
+                    QVector<int> btnIds;
+                    btnStrs.push_back("你谁啊");
+                    btnIds.push_back(0);
+                    setDialog("本小姐都不知道怎么把你叫醒~",btnStrs,btnIds);
+                });
+            });
+
+            break;
+        }
+        default:
+            break;
+        }
+    });
+}
+//响应按键event
+void Dominator::btnEvent(){
     connect(dialog,&DialogBox::branchTriggered,this,[=](int id){
         if(id==0){
             QTimer::singleShot(100,this,[=](){
@@ -184,6 +224,21 @@ void Dominator::giveSunlight(int num,int eachVal){
 void Dominator::setCurrentGif(){
 
 }
+//小推车
+//
+void Dominator::releaseMower(int r){
+    GameScene* gamescene = getGameScene();
+    if(gamescene){
+
+    }
+}
+void Dominator::addMower(int r){
+    GameScene* gamescene = getGameScene();
+    if(gamescene){
+
+    }
+}
+
 //用户行为模拟
 //模拟拖拽
 void Dominator::simulateDrag(QPointF pos,QPointF toPos,QPixmap pixmap){

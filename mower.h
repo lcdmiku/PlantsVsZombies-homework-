@@ -15,6 +15,9 @@ class Mower : public MyObject
 public:
     explicit Mower();
     void advance(int phase) override;
+
+    //放生小推车
+    void releaseMower(){hasCollided = true;}
     ~Mower();
 
 

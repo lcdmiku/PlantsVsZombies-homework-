@@ -9,7 +9,7 @@
 GameScene::GameScene(QObject *parent,GameLevelData* data)
     : QGraphicsScene(parent),settingsMenu(nullptr),levelData(data),
     moment(0),currWave(0),waveMoment(0),
-    plantareas(),zombies(),plants(),
+    plantareas(),zombies(),plants(),mowers(),
     plantAreaMap(5,QList<PlantArea*>(9,nullptr)),plantRow(),zombieRow(),
     bgPath(data->backgroundImage),gameBg(nullptr),
     bgMus(new QMediaPlayer(this)),audioOutput(new QAudioOutput(this)),
@@ -118,6 +118,8 @@ void GameScene::DominatorAct(){
     if(!dominator)return;
     dominator->setPos(this->sceneRect().center());
     dominator->setZValue(10);
+    connect(this,&GameScene::waveStart,dominator,&Dominator::waveStart);//使dominator能感应外界波次
+    dominator->initEvent();
 }
 //选这植物阶段
 void GameScene::GamePre(){
@@ -283,6 +285,7 @@ void GameScene::mowerGenerate(){
         //Mower
         if(MowerRow[i]==1){
             Mower *mower = new Mower();
+            mowers.insert(i,mower);//加入mower
             mower->setPos(QPointF(150 +105 ,120) + QPointF(-20 ,94*i));
             mower->setZValue(-1);
             addItem(mower);

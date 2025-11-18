@@ -42,10 +42,16 @@ void SnowPeashooter::plantAction(){
     connect(this,&Plant::findZombie,this,[=](MyObject *zombie){
 
         if(scene() && Bullet::bulletNum<Bullet::delNum+200){
-            SnowPea *bullet = new SnowPea(":/res/GameRes/images/PeaSnow.png",100);
+            SnowPea *bullet = new SnowPea(":/res/GameRes/images/PeaSnow.png"
+                                          ,100*bulletPowerRate);
+
             connect(this,&MyObject::GameOver,bullet,&MyObject::GameOver);//
+
             bullet->setPos(this->scenePos()+QPointF(40,-20));
-            Animate(bullet).speed(AnimationType::Move,bullet->getSpeed()).move(QPointF(900,0));
+
+            Animate(bullet).speed(AnimationType::Move,bullet->getSpeed() * bulletSpeedRate)
+                .move(QPointF(900,0));
+
             scene()->addItem(bullet);
         }
 
