@@ -4,7 +4,10 @@
 #include<QGraphicsProxyWidget>
 #include<QTimeLine>
 #include<QGraphicsItemAnimation>
+#include<QPropertyAnimation>
 #include"dominator.h"
+#include<QGraphicsView>
+#include<QDebug>
 
 GameScene::GameScene(QObject *parent,GameLevelData* data)
     : QGraphicsScene(parent),settingsMenu(nullptr),levelData(data),
@@ -71,6 +74,7 @@ void GameScene::setNextWave(){
     //当全部结束，标志胜利
     if(currWave>=levelData->waveNum){
         emit GameSuccess(true);
+        showPlayerWon();
     }
 }
 void GameScene::settingInit(){
@@ -207,7 +211,7 @@ void GameScene::sunlightGenerate(int prob){
 //进行游戏阶段
 void GameScene::GameStart(){
     //背景音
-    playBGM(levelData->backgroundMusic);
+    // playBGM(levelData->backgroundMusic);太吵了,先注释掉
     //dominator
     DominatorAct();
     //shovel
@@ -226,12 +230,24 @@ void GameScene::GameStart(){
     //plantarea
     PlantAreaGenerate();
     //mower
-    mowerGenerate();
+    // mowerGenerate();//暂时注释，调试完放回
 
     //zombie generate
     // ZombieGenerate();
     //第0波开始
     emit waveStart(0);
+
+    // DEBUG: 10秒后直接触发胜利
+    // QTimer::singleShot(10000, this, [=](){
+    //     qDebug() << "DEBUG: Triggering player victory.";
+    //     showPlayerWon();
+    // });
+
+    //Debug: 10秒后触发僵尸胜利
+    QTimer::singleShot(10000, this, [=](){
+        qDebug() << "DEBUG: Triggering zombie victory.";
+        showZombieWon();
+    });
 }
 void GameScene::move(MyObject* target,QPointF& dest){
         Animate(target).move(dest,false);
@@ -279,7 +295,7 @@ void GameScene::moveBg(){
 }
 //生成小推车
 void GameScene::mowerGenerate(){
-    //
+    //暂时注释，调试完放回去
     for(int i=0;i<5;i++){
         QList MowerRow = levelData->mowerRow;
         //Mower
@@ -378,12 +394,11 @@ void GameScene::ZombieGenerate(){
         zombie->setZValue(row);
         addItem(zombie);
         //僵尸行走
-        Animate(zombie).speed(AnimationType::Move,zombie->getSpeed()).move(QPointF(-900,0));
-        //处理僵尸胜利的请款
-        connect(zombie,&Zombie::zombieSuccess,this,[=](){
-
-        });
+        Animate(zombie).speed(AnimationType::Move,zombie->getSpeed()).move(QPointF(-1800,0));
+        //处理僵尸胜利的情况：当僵尸触发胜利时，标记为关卡失败并结束游戏
+        connect(zombie,&Zombie::zombieSuccess,this,&GameScene::showZombieWon);
         connect(this,&GameScene::GameOver,zombie,&MyObject::GameOver);
+        connect(this,&GameScene::GamePause,zombie,&MyObject::GamePause);
     }
 }
 //在指定位置生成僵尸
@@ -428,12 +443,11 @@ void GameScene::ZombieGenerate(ZombieType zombieType,int row,int x){
         zombie->setZValue(row);
         addItem(zombie);
         //僵尸行走
-        Animate(zombie).speed(AnimationType::Move,zombie->getSpeed()).move(QPointF(-900,0));
-        //处理僵尸胜利的情况
-        connect(zombie,&Zombie::zombieSuccess,this,[=](){
-
-        });
+        Animate(zombie).speed(AnimationType::Move,zombie->getSpeed()).move(QPointF(-1800,0));
+        //处理僵尸胜利的情况：当僵尸触发胜利时，标记为关卡失败并结束游戏
+        connect(zombie,&Zombie::zombieSuccess,this,&GameScene::showZombieWon);
         connect(this,&GameScene::GameOver,zombie,&MyObject::GameOver);//与消亡绑定
+        connect(this,&GameScene::GamePause,zombie,&MyObject::GamePause);
     }
 }
 //根据当前波数生成僵尸
@@ -493,6 +507,99 @@ void playSoundEffect(const QString& soundPath){
             audioOutput->deleteLater();
         }
     });
+}
+
+void GameScene::showZombieWon(){
+    // 停止波次计时
+    if(waveTimer->isActive()) waveTimer->stop();
+    
+    // 停止背景音乐
+    bgMus->stop();
+
+    // 播放音效
+    playSoundEffect("qrc:/res/GameRes/audio/scream.wav");
+    playSoundEffect("qrc:/res/GameRes/audio/losemusic.mp3");
+    
+    // 定住所有僵尸和植物
+    emit GamePause();
+
+    // 获取视图
+    QList<QGraphicsView *> views = this->views();
+    if (views.isEmpty()) return;
+    QGraphicsView* view = views.first();
+
+    // 视口平移动画
+    QRectF startRect = view->sceneRect();
+    // 向左移动视口 250 像素（即看到左边的内容），相当于背景向右移
+    QRectF endRect = startRect.translated(-150, 0); 
+
+    QTimeLine* timeLine = new QTimeLine(2000, this); 
+    timeLine->setFrameRange(0, 100);
+    timeLine->setUpdateInterval(20);
+    timeLine->setEasingCurve(QEasingCurve::InOutQuad);
+
+    // 显示图片
+    QGraphicsPixmapItem* wonItem = new QGraphicsPixmapItem(QPixmap(":/res/GameRes/images/ZombiesWon.png"));
+    wonItem->setZValue(100);
+    addItem(wonItem);
+    
+    // 动画更新
+    connect(timeLine, &QTimeLine::valueChanged, this, [=](qreal value){
+        // 插值计算当前 sceneRect
+        qreal t = value;
+        qreal x = startRect.x() * (1-t) + endRect.x() * t;
+        qreal y = startRect.y() * (1-t) + endRect.y() * t;
+        QRectF currentRect(x, y, startRect.width(), startRect.height());
+        view->setSceneRect(currentRect);
+
+        // 更新图片位置，使其始终在视口中心
+        int imgW = wonItem->pixmap().width();
+        int imgH = wonItem->pixmap().height();
+        QPointF center = currentRect.center();
+        wonItem->setPos(center.x() - imgW/2, center.y() - imgH/2);
+    });
+
+    timeLine->start();
+    
+    // 可以在动画结束后 emit GameOver
+    connect(timeLine, &QTimeLine::finished, this, [=](){
+         timeLine->deleteLater();
+         // emit GameOver(); // 暂时不 emit GameOver，以免清空场景导致看不到图片
+         emit GameSuccess(false);
+         emit GameOver();
+    });
+}
+
+void GameScene::showPlayerWon(){
+    // 停止波次计时
+    if(waveTimer->isActive()) waveTimer->stop();
+    
+    // 停止背景音乐
+    bgMus->stop();
+
+    // 播放胜利音乐
+    playSoundEffect("qrc:/res/GameRes/audio/winmusic.mp3");
+    
+    // 清除所有僵尸（可选，或者定住它们）
+    emit GamePause();
+
+    // 创建奖杯
+    Trophy *trophy = new Trophy();
+    addItem(trophy);
+
+    // 点击奖杯后播放一个动画，然后没有了。
+    
+    // 居中显示
+    // View 的 sceneRect 是 (150, 0, 900, 600)。中心点 (600, 300)。
+    // 假设图片大小适中，居中显示
+    // 需要先获取 pixmap 大小，但 MyObject 默认是异步加载 movie 或者 path
+    // 这里我们假设 Trophy 构造函数里已经加载了图片或者会在 paint 时绘制
+    // 为了确保位置正确，我们可以手动设置一下位置，或者在 Trophy 里处理
+    // 由于 MyObject 使用 QMovie 或 path，我们需要确保它有尺寸
+    
+    // 简单的居中逻辑，假设 Trophy 默认大小
+    trophy->setPos(600, 300);
+    trophy->setZValue(5); // 确保在最上层
 }
 
 //调试用

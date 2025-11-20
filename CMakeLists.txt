@@ -69,6 +69,8 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
         dominator.h dominator.cpp
         coordinate.h coordinate.cpp
         dialogbox.h dialogbox.cpp
+        trophy.cpp
+        trophy.h
 
 
     )

@@ -2,7 +2,7 @@
 #include"animate.h"
 #include<QLineF>
 #include<QGraphicsItem>
-
+#include<QTimer>
 
 Zombie::Zombie(QString objPath,
                enum ZombieType zombieType,QString attackingGif,int hp,int speed,int attackpower)
@@ -14,6 +14,7 @@ Zombie::Zombie(QString objPath,
     currentHp = hp;
     attackedPlant = nullptr;
     zombieAttackTimer = new QTimer(this);
+    IfwinTimer = new QTimer(this);
     //
     hitEffect = new QGraphicsColorizeEffect(this);
     hitEffect->setColor(Qt::red);  // 设置为红色
@@ -32,6 +33,17 @@ Zombie::Zombie(QString objPath,
         if(plant && plant->getObjType() == Type::PLANT)
         Action(plant);
     });
+    
+    //检测是否到达左侧阈值
+    connect(IfwinTimer,&QTimer::timeout,this,[=](){
+        qDebug() << "zombie x:" << this->pos().x();
+        if(this->pos().x() < 50 && !isDead){
+            emit zombieSuccess();
+            isDead = true; // 防止重复触发
+        }
+    });
+    IfwinTimer->start(100);
+
     //攻击
     connect(zombieAttackTimer,&QTimer::timeout,this,[=](){
         if(attackedPlant)
@@ -72,7 +84,7 @@ void Zombie::stopMoving() {
 
 void Zombie::continueMoving() {
     movable = true;
-    Animate(this).speed(AnimationType::Move,speed).move(QPointF(-1000,0));
+    Animate(this).speed(AnimationType::Move,speed).move(QPointF(-1800,0));
 }
 
 // QRectF Zombie::boundingRect() const{
