@@ -234,5 +234,6 @@
         <file>GameRes/audio/tap.wav</file>
         <file>GameRes/audio/UraniwaNi.mp3</file>
         <file>GameRes/audio/winmusic.mp3</file>
+        <file>GameRes/audio/scream.wav</file>
     </qresource>
 </RCC>

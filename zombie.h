@@ -3,6 +3,7 @@
 #include"myobj.h"
 #include"plant.h"
 #include<QGraphicsColorizeEffect>
+#include<QDebug>
 
 class Zombie : public MyObject
 {
@@ -43,6 +44,7 @@ protected:
     double CurrentSpeedRate;
     int attackPower;
     QTimer *zombieAttackTimer;//需要计时器控制
+    QTimer *IfwinTimer;//判断是否进屋
     QPointer<Plant> attackedPlant;//使用弱指针管理被打击的植物
     QMovie *secondaryDyingMovie;
     //尝试同步计时

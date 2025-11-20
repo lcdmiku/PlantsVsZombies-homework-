@@ -21,6 +21,7 @@
 #include"myobj.h"
 #include"plant.h"
 #include"zombie.h"
+#include"trophy.h"
 #include<QSettings>
 #include"settingsmenu.h"
 #include"gameleveldata.h"
@@ -118,6 +119,11 @@ public:
     // void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     //处理进入下一波
     void setNextWave();
+    //处理僵尸胜利
+    void showZombieWon();
+    //处理玩家胜利
+    void showPlayerWon();
+
 signals:
     void GameOver();
     void GamePause();
