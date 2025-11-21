@@ -28,15 +28,10 @@ GameScene::GameScene(QObject *parent,GameLevelData* data)
     settingInit();
     //相关控件
     shop = new Shop();//商店
-
-    QGraphicsScene::addItem(shop);
-    connect(this, &GameScene::GamePause, shop, &MyObject::GamePause);
-    connect(this, &GameScene::GameContinue, shop, &MyObject::GameContinue);
+    addItem(shop);
 
     selectPlant = new SelectPlant();//选择板
-    QGraphicsScene::addItem(selectPlant);
-    connect(this, &GameScene::GamePause, selectPlant, &MyObject::GamePause);
-    connect(this, &GameScene::GameContinue, selectPlant, &MyObject::GameContinue);
+    addItem(selectPlant);
 
     shovel = new Shovel;//铲子,在~GameScene中delete
     addItem(shovel);
@@ -45,9 +40,7 @@ GameScene::GameScene(QObject *parent,GameLevelData* data)
     addItem(gameBg);
 
     dominator = new Dominator();
-    QGraphicsScene::addItem(dominator);
-    connect(this, &GameScene::GamePause, dominator, &MyObject::GamePause);
-    connect(this, &GameScene::GameContinue, dominator, &MyObject::GameContinue);
+    addItem(dominator);
     //音效
     audioOutput->setVolume(0.5);
     bgMus->setAudioOutput(audioOutput);
