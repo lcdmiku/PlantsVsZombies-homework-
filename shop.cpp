@@ -68,6 +68,13 @@ void Shop::increaseSunlight(int sunlightValue){
 void Shop::reduceSunlight(int sunlightValue){
     increaseSunlight(-sunlightValue);
 }
+
+void Shop::setSun(int val) {
+    totalValue = val;
+    sunlightText->setText(QString::number(totalValue));
+    update();
+}
+
 //添加卡片
 void Shop::addCard(QString plantName){
     if(cards.size()<6)

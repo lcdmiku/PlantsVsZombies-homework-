@@ -17,6 +17,7 @@
 #include"mower.h"
 #include"selectplant.h"
 #include"startwidget.h"
+#include"selectlevelwidget.h"
 #include"settingsmenu.h"
 #include"shovel.h"
 #include<QPainter>
@@ -61,6 +62,7 @@ private:
     //栈UI
     QStackedWidget *stackedWidget;
     StartWidget *startWidget;
+    SelectLevelWidget *selectLevelWidget;
 
     void GamePre();
 

@@ -74,6 +74,10 @@ class GameScene : public QGraphicsScene
 
     void moveBg();/*
     Coordinate* coo;*/
+    
+    // 代理控件
+    QGraphicsProxyWidget *start_proxy;
+    QGraphicsProxyWidget *cardDelete_proxy;
 
 public:
     explicit GameScene(QObject *parent = nullptr,GameLevelData* data = new GameLevelData_1());
@@ -90,7 +94,11 @@ public:
     void addItem(MyObject* item);
     void addItem(QGraphicsItem* item);
 
-    void setMenu(SettingsMenu *settingsMenu){settingsMenu = settingsMenu;}
+    void setMenu(SettingsMenu *menu){
+        this->settingsMenu = menu;
+        menuInit();
+    }
+
     //得到种植地
     PlantArea* getPlantArea(int r,int c);
     //得到商店

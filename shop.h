@@ -20,6 +20,8 @@ public:
     //减少阳光值或增加阳光值
     void increaseSunlight(int num);
     void reduceSunlight(int num);
+    // 设置阳光值
+    void setSun(int val);
     //添加卡片
     void addCard(QString plantName);
 
