@@ -10,14 +10,31 @@ Zomboni::Zomboni()
              "",
              29999, // HP
              29,   // Speed
-             10000) // Attack Power (秒杀)
+             10000), // Attack Power (秒杀)
+      mySummonInterval(10000), // 默认10秒
+      mySelfSummonProbability(100) // 默认0%
 {
     // 冰车僵尸通常免疫减速（可选实现，这里先保留默认行为）
     
     // 初始化技能计时器
     skillTimer = new QTimer(this);
     connect(skillTimer, &QTimer::timeout, this, &Zomboni::summonZombies);
-    skillTimer->start(summonInterval); // 使用静态变量设置的时间
+    skillTimer->start(mySummonInterval); 
+}
+
+void Zomboni::setMySummonInterval(int interval)
+{
+    mySummonInterval = interval;
+    if (skillTimer->isActive()) {
+        skillTimer->start(mySummonInterval); // 重启计时器以应用新间隔
+    }
+}
+
+void Zomboni::setMySelfSummonProbability(int prob)
+{
+    if (prob < 0) prob = 0;
+    if (prob > 100) prob = 100;
+    mySelfSummonProbability = prob;
 }
 
 Zomboni::~Zomboni()
@@ -180,7 +197,7 @@ void Zomboni::summonZombies()
         ZombieType randomType;
         
         // 检查是否生成冰车自身
-        if (QRandomGenerator::global()->bounded(100) < selfSummonProbability) {
+        if (QRandomGenerator::global()->bounded(100) < mySelfSummonProbability) {
             randomType = ZombieType::Zomboni;
         } else {
             int typeIndex = QRandomGenerator::global()->bounded(validTypes.size());
@@ -196,30 +213,4 @@ void Zomboni::summonZombies()
     QTimer::singleShot(2000, this, [=](){
         this->continueMoving();
     });
-}
-
-// 初始化静态成员变量
-int Zomboni::summonInterval = 10000;
-int Zomboni::selfSummonProbability = 0.2; // 默认0%
-
-void Zomboni::setSummonInterval(int interval)
-{
-    summonInterval = interval;
-}
-
-int Zomboni::getSummonInterval()
-{
-    return summonInterval;
-}
-
-void Zomboni::setSelfSummonProbability(int prob)
-{
-    if (prob < 0) prob = 0;
-    if (prob > 100) prob = 100;
-    selfSummonProbability = prob;
-}
-
-int Zomboni::getSelfSummonProbability()
-{
-    return selfSummonProbability;
 }

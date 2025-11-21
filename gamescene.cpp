@@ -466,7 +466,13 @@ void GameScene::ZombieGenerate(ZombieType zombieType,int row,int x){
     }
     case ZombieType::Zomboni:
     {
-        zombie = new Zomboni();
+        Zomboni* zomboni = new Zomboni();
+        // 应用关卡难度设置
+        if (levelData) {
+            zomboni->setMySummonInterval(levelData->zomboniSummonInterval);
+            zomboni->setMySelfSummonProbability(levelData->zomboniSelfSummonProb);
+        }
+        zombie = zomboni;
         break;
     }
     default:

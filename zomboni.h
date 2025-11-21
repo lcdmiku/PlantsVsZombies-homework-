@@ -10,13 +10,10 @@ public:
     explicit Zomboni();
     ~Zomboni();
 
-    // 调整僵尸生成速率的接口，备用
-    static void setSummonInterval(int interval);
-    static int getSummonInterval();
-
-    // 设置召唤时生成冰车自身的概率，也备用
-    static void setSelfSummonProbability(int prob);
-    static int getSelfSummonProbability();
+    // 设置当前冰车的召唤间隔，未来可以通过levelData中的接口来更新这两个数据(冰车只通过指定出现)
+    void setMySummonInterval(int interval);
+    // 设置当前冰车的自我召唤概率
+    void setMySelfSummonProbability(int prob);
 
 protected:
     // 僵尸行为特征
@@ -35,8 +32,8 @@ private slots:
 
 private:
     QTimer *skillTimer;
-    static int summonInterval;
-    static int selfSummonProbability;
+    int mySummonInterval; // 实例变量
+    int mySelfSummonProbability; // 实例变量
 };
 
 #endif // ZOMBONI_H

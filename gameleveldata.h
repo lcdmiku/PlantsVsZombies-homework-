@@ -43,7 +43,11 @@ public:
     // QPair<QList<int>, QList<int> > flagToSumNum;
     QMap<int, std::function<void(GameScene *)> > flagToMonitor;//每波到达后所触发的函数
 
-    //
+    // 冰车僵尸的难度设置
+    int zomboniSummonInterval; // 召唤间隔 (ms)
+    int zomboniSelfSummonProb; // 自我召唤概率 (0-100)
+
+    void setZomboniDifficulty(int interval, int selfProb);
 
     QList<ZombieData> zombieData;//各类僵尸信息
 
