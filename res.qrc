@@ -235,5 +235,16 @@
         <file>GameRes/audio/UraniwaNi.mp3</file>
         <file>GameRes/audio/winmusic.mp3</file>
         <file>GameRes/audio/scream.wav</file>
+        <file>GameRes/images/ice.png</file>
+        <file>GameRes/images/ice_cap.png</file>
+        <file>GameRes/images/Zombies/Zomboni/0.gif</file>
+        <file>GameRes/images/Zombies/Zomboni/1.gif</file>
+        <file>GameRes/images/Zombies/Zomboni/2.gif</file>
+        <file>GameRes/images/Zombies/Zomboni/3.gif</file>
+        <file>GameRes/images/Zombies/Zomboni/4.gif</file>
+        <file>GameRes/images/Zombies/Zomboni/5.gif</file>
+        <file>GameRes/images/Zombies/Zomboni/BoomDie.gif</file>
+        <file>GameRes/images/Zombies/Zomboni/ice.png</file>
+        <file>GameRes/images/Zombies/Zomboni/ice_cap.png</file>
     </qresource>
 </RCC>

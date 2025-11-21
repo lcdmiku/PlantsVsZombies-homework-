@@ -73,6 +73,9 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
         trophy.h
         selectlevelwidget.cpp
         selectlevelwidget.h
+        zomboni.cpp
+        zomboni.cpp
+        zomboni.h
 
 
     )

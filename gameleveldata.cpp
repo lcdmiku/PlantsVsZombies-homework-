@@ -15,7 +15,9 @@ GameLevelData::GameLevelData():
     waveTotWeight(waveNum,0),
     waveDuration({60,60,60,60,60}),
     waveLimits({10,15,20,25,35}),
-    map(5,QList<int>(9,0))
+    map(5,QList<int>(9,0)),
+    zomboniSummonInterval(10000), // 默认10秒
+    zomboniSelfSummonProb(0)      // 默认0%
 {
 
 }
@@ -128,4 +130,11 @@ GameLevelData *GameLevelDataFactory(const QString &eName)
     if (eName == "1")
         return new GameLevelData_1();
     return nullptr;
+}
+
+//此接口预留来设置冰车僵尸难度(时间间隔，生成自身的概率)
+void GameLevelData::setZomboniDifficulty(int interval, int selfProb)
+{
+    zomboniSummonInterval = interval;
+    zomboniSelfSummonProb = selfProb;
 }

@@ -8,6 +8,7 @@
 #include"dominator.h"
 #include<QGraphicsView>
 #include<QDebug>
+#include "zomboni.h"
 
 GameScene::GameScene(QObject *parent,GameLevelData* data)
     : QGraphicsScene(parent),settingsMenu(nullptr),levelData(data),
@@ -132,7 +133,7 @@ void GameScene::DominatorAct(){
     connect(this,&GameScene::waveStart,dominator,&Dominator::waveStart);//使dominator能感应外界波次
     dominator->initEvent();
 }
-//选这植物阶段
+//选择植物阶段
 void GameScene::GamePre(){
     qDebug() << "into GamePre()函数";
 
@@ -463,6 +464,17 @@ void GameScene::ZombieGenerate(ZombieType zombieType,int row,int x){
         zombie = new FootballZombie();
         break;
     }
+    case ZombieType::Zomboni:
+    {
+        Zomboni* zomboni = new Zomboni();
+        // 应用关卡难度设置
+        if (levelData) {
+            zomboni->setMySummonInterval(levelData->zomboniSummonInterval);
+            zomboni->setMySelfSummonProbability(levelData->zomboniSelfSummonProb);
+        }
+        zombie = zomboni;
+        break;
+    }
     default:
         break;
     }
@@ -483,6 +495,13 @@ void GameScene::ZombieGenerate(ZombieType zombieType,int row,int x){
 }
 //根据当前波数生成僵尸
 void GameScene::ZombieGenerate(int currwave){
+    // 调试：第0波生成一个冰车僵尸
+    if(currwave == 0) {
+        qDebug() << "yes, I'm generating zomboni!";
+        int row = QRandomGenerator::global()->bounded(0,5);
+        ZombieGenerate(ZombieType::Zomboni, row, this->width()+200);
+    }
+
     QList<ZombieType> zombies = levelData->zombieExtract(currwave);
     for (int i = 0; i < zombies.size(); ++i)
     {
