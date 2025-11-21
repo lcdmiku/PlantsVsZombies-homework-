@@ -68,6 +68,7 @@ class GameScene : public QGraphicsScene
     QTimer *waveTimer;
     int currWave;//记录已经是第几波
 
+    //wave
     int waveMoment;//记录当前波已经进行的时间
     int moment;//记录游戏已经进行的时间
 

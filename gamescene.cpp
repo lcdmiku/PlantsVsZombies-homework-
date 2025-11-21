@@ -230,7 +230,7 @@ void GameScene::GameStart(){
     //plantarea
     PlantAreaGenerate();
     //mower
-    // mowerGenerate();//暂时注释，调试完放回
+    mowerGenerate();//暂时注释，调试完放回
 
     //zombie generate
     // ZombieGenerate();
@@ -244,10 +244,10 @@ void GameScene::GameStart(){
     // });
 
     //Debug: 10秒后触发僵尸胜利
-    QTimer::singleShot(10000, this, [=](){
-        qDebug() << "DEBUG: Triggering zombie victory.";
-        showZombieWon();
-    });
+    // QTimer::singleShot(10000, this, [=](){
+    //     qDebug() << "DEBUG: Triggering zombie victory.";
+    //     showZombieWon();
+    // });
 }
 void GameScene::move(MyObject* target,QPointF& dest){
         Animate(target).move(dest,false);

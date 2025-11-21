@@ -30,11 +30,15 @@ public:
     int getSpeed(){return speed;}
     ~Zombie();
 
+    static int zombieNum;
+
 signals:
     //僵尸胜利
     void zombieSuccess();
+    void noZombie(QPointF pos);//当场上没有僵尸时触发
 
     void dead();
+
 
 
 protected:

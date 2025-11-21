@@ -46,7 +46,10 @@ void Dominator::waveEvent(){
                     QVector<QString> btnStrs;
                     QVector<int> btnIds;
                     btnStrs.push_back("你谁啊");
+                    btnStrs.push_back("1");
                     btnIds.push_back(0);
+                    btnIds.push_back(1);
+
                     setDialog("本小姐都不知道怎么把你叫醒~",btnStrs,btnIds);
                 });
             });
@@ -74,7 +77,7 @@ void Dominator::btnEvent(){
 
         }
         if(id==1){
-            hideDialog();
+            giveSunlight(50,50);
         }
         if(id==3)randomWalk();
         hideDialog();

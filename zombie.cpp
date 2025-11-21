@@ -4,12 +4,15 @@
 #include<QGraphicsItem>
 #include<QTimer>
 
+int Zombie::zombieNum = 0;
 Zombie::Zombie(QString objPath,
                enum ZombieType zombieType,QString attackingGif,int hp,int speed,int attackpower)
     :MyObject(nullptr,objPath,Type::ZOMBIE),
     hp(hp),speed(speed),CurrentSpeedRate(1),attackPower(attackpower),attackingGif(attackingGif),zombieType(zombieType),
     Hz(30),movable(true),slowEffect(0)//81,94
 {
+    //每生成一个僵尸，zombieNum++
+    zombieNum++;
 
     currentHp = hp;
     attackedPlant = nullptr;
@@ -163,6 +166,9 @@ void Zombie::dealDead(enum DieType dieType){
         }
         // 定时结束死亡动画
         QTimer::singleShot(2000, this, [=](){
+            //
+            zombieNum--;
+            if(zombieNum==0)emit noZombie(this->pos());
             deleteLater();
         });
     }
