@@ -27,7 +27,8 @@ enum class ZombieType{
     ScreenZombie,
     BucketZombie,
     ConeZombie,
-    FootballZombie
+    FootballZombie,
+    Zomboni
 };
 
 enum class DieType{
