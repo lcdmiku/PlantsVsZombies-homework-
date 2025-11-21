@@ -71,6 +71,8 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
         dialogbox.h dialogbox.cpp
         trophy.cpp
         trophy.h
+        selectlevelwidget.cpp
+        selectlevelwidget.h
 
 
     )
