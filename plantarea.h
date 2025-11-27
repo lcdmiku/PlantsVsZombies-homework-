@@ -63,6 +63,8 @@ public:
     void setPlantable(bool plantable,QString coverage);
     //向外界提供该地植物指针
     Plant* getPlant();
+    //获取是否ke种植植物
+    bool getIsPlantable(){return plantable && !isEmpty;}
     ~PlantArea();
 
 signals:

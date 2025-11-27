@@ -34,6 +34,7 @@ protected:
 private slots:
     void summonZombies();
 
+
 private:
     QTimer *skillTimer;
     int mySummonInterval; // 实例变量

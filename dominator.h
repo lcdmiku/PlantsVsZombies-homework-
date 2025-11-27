@@ -29,6 +29,7 @@ private:
     QGraphicsRectItem* eyeProtectionLayer = nullptr;
 
     PlantType sacrifiedPlant=PlantType::PEASHOOTER;
+    QString sacrifiedPlantName = QString("豌豆射手");
 
 public:
     //get
@@ -80,6 +81,9 @@ public:
     //辅助函数
     PlantType getSacrificedFromBtnId(int btnId);//通过btnId得到献祭植物
     PlantType getRandomPlantType();//获得随机植物类型
+    void resetAttachment(){attachment->setPixmap(QPixmap()); attachment->setPos(0,0);}
+    void setAttachment(QString pix,QPointF pos = QPointF(0,0)){attachment->setPos(pos);attachment->setPixmap(QPixmap(pix));}
+    void setTemporalPix(QString pixPath,QPointF);
 
 
 signals:

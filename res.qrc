@@ -267,5 +267,29 @@
         <file>GameRes/images/FlagMeterParts1.png</file>
         <file>GameRes/images/FlagMeterParts2.png</file>
         <file>GameRes/images/scarysan_small.png</file>
+        <file>GameRes/images/Zombies/FootballZombie/0.gif</file>
+        <file>GameRes/images/Zombies/FootballZombie/1.gif</file>
+        <file>GameRes/images/Zombies/FootballZombie/Attack.gif</file>
+        <file>GameRes/images/Zombies/FootballZombie/BoomDie.gif</file>
+        <file>GameRes/images/Zombies/FootballZombie/Die.gif</file>
+        <file>GameRes/images/Zombies/FootballZombie/FootballZombie.gif</file>
+        <file>GameRes/images/Zombies/FootballZombie/FootballZombieAttack.gif</file>
+        <file>GameRes/images/Zombies/FootballZombie/FootballZombieOrnLost.gif</file>
+        <file>GameRes/images/Zombies/FootballZombie/FootballZombieOrnLostAttack.gif</file>
+        <file>GameRes/images/Zombies/FootballZombie/LostHead.gif</file>
+        <file>GameRes/images/Zombies/FootballZombie/LostHeadAttack.gif</file>
+        <file>GameRes/images/Zombies/FootballZombie/OrnLost.gif</file>
+        <file>GameRes/images/Zombies/FootballZombie/OrnLostAttack.gif</file>
+        <file>GameRes/images/Zombies/ScreenDoorZombie/0.gif</file>
+        <file>GameRes/images/Zombies/ScreenDoorZombie/1.gif</file>
+        <file>GameRes/images/Zombies/ScreenDoorZombie/HeadAttack1.gif</file>
+        <file>GameRes/images/Zombies/ScreenDoorZombie/HeadWalk1.gif</file>
+        <file>GameRes/images/Zombies/ScreenDoorZombie/LostHeadAttack1.gif</file>
+        <file>GameRes/images/Zombies/ScreenDoorZombie/LostHeadWalk1.gif</file>
+        <file>GameRes/images/Zombies/ScreenDoorZombie/ScreenDoorZombie.gif</file>
+        <file>GameRes/images/Zombies/ScreenDoorZombie/ScreenDoorZombieAttack.gif</file>
+        <file>GameRes/images/mahosteel.jpg</file>
+        <file>GameRes/images/mahosteel(1).png</file>
+        <file>GameRes/images/kmyy(1).png</file>
     </qresource>
 </RCC>

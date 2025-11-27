@@ -11,7 +11,8 @@
 
 Dominator::Dominator():MyObject(nullptr,QString(":/res/GameRes/images/scarysan_small.png"),Type::Dominator),
     speed(100),speedRate(1.0),coordinate(),eventInit(false),
-    sunlightTax(0), eyeProtectionOn(false), eyeProtectionLayer(nullptr)
+    sunlightTax(0), eyeProtectionOn(false), eyeProtectionLayer(nullptr),
+    attachment(new QGraphicsPixmapItem(this))
 {
     dialog = new DialogBox(this);//dialg 随dominator添加到场景中
     dialog->hide();
@@ -38,7 +39,7 @@ void Dominator::waveEvent(){
         Animate(this).duration(AnimationType::Move,1000)
             .move(QPointF(coordinate.getX(4),coordinate.getY(2)),false);
         QString info = "第" + QString::number(currwave) +"波僵尸即将到来";
-        if(currwave <= 6)setDialog(info,{"知道了"},{-1});
+        if(currwave > 0 && currwave <= 6)setDialog(info,{"知道了"},{-1});
 
         switch (currwave) {
         case 0:{
@@ -97,7 +98,7 @@ void Dominator::waveEvent(){
             QTimer::singleShot(2 * 1000,this,[=](){
                 setDialog("等会会出现带铁桶的僵尸，你应该能应付吧～");
                 //2
-                QTimer::singleShot(1000,this,[=](){
+                QTimer::singleShot(2000,this,[=](){
                     hideDialog();
                 });
             });
@@ -207,6 +208,11 @@ void Dominator::waveEvent(){
 }
 //响应按键event,第n波第k个事件编码 10*n + k,一般k<10
 void Dominator::btnEvent(){
+    GameScene* gamescene = getGameScene();
+    if(!gamescene){
+        qDebug()<<"dominator can't get the gamescene!error!";
+        return;
+    }
     connect(dialog,&DialogBox::branchTriggered,this,[=](int id){
         switch (id) {
         case -1:case -2:case -3:{
@@ -221,8 +227,9 @@ void Dominator::btnEvent(){
             sacrifiedPlant=sacrifice;
             if(sacrifice != PlantType::None){
                 sacrifyPlant(sacrifice);
-                setDialog("这么大胆，可以~");
-                QTimer::singleShot(1000,this,[=](){
+                setDialog(sacrifiedPlantName);
+                QTimer::singleShot(2000,this,[=](){
+                    resetAttachment();
                     hideDialog();
                     randomWalk();
                 });//1s后隐藏对话框
@@ -239,7 +246,7 @@ void Dominator::btnEvent(){
             break;
         }
         case 11:{
-            setDialog("那本小姐看看你有什么本事");
+            setDialog("那本小姐看看你到底有什么本事嚯嚯嚯嚯~");
             QTimer::singleShot(1500,this,[=](){
                 hideDialog();
                 randomWalk();
@@ -276,28 +283,51 @@ void Dominator::btnEvent(){
                 int c = QRandomGenerator::global()->bounded(4,9);
                 qreal y = coordinate.getY(r);
                 qreal x = coordinate.getX(c);
-                ZombieGenerate(ZombieType::NormalZombie,r,x);
+                // ZombieGenerate(ZombieType::NormalZombie,r,x);
                 poses.push_back(QPointF(x,y));
             }
             // wipeZombie(poses);
-            ZombieGenerate(poses);
-            int r = QRandomGenerator::global()->bounded(0,5);
-            int c = QRandomGenerator::global()->bounded(0,9);
-            // //如果不成功，不断抽取
-            int cnt = 0;
-            while (!uproot(r,c)) {
-                if(++cnt>=50){
-                    break;
-                }
-                int r = QRandomGenerator::global()->bounded(0,5);
-                int c = QRandomGenerator::global()->bounded(0,9);
-            }
-            setDialog("本小姐真是大好人~");
-            QTimer::singleShot(2 * 1000,this,[=](){
 
-                hideDialog();
-                randomWalk();
+            // //如果不成功，不断抽取
+            //获取有植物的土地
+            QList<PlantArea*> areas = gamescene->filterGameScene<PlantArea>([](PlantArea* area){
+                return !area->checkEmpty();
             });
+            if(areas.empty() == false){//如果有种植植物
+                int gen = QRandomGenerator::global()->bounded(0,areas.size());
+                PlantArea *area = areas[gen];
+                int r = area->r();
+                int c = area->c();
+                setAttachment(":/res/GameRes/images/Shovel.png");
+                Animate(this).duration(AnimationType::Move,1000)
+                    .move(QPointF(coordinate.getX(c),coordinate.getY(r)),false)
+                    .finish(AnimationType::Move,[=](){
+                    area->removePlant();
+                    setDialog("本小姐真是大好人~");
+                    resetAttachment();
+                    ZombieGenerate(poses);
+                    QTimer::singleShot(poses.size() * 1100 + 1100,this,[=](){
+                        setDialog("我给你请了几位僵尸朋友~");
+                        QTimer::singleShot(2000,this,[=](){
+                            hideDialog();
+                            randomWalk();
+                        });
+                    });
+
+                });
+
+            }
+            else{
+                ZombieGenerate(poses);
+                QTimer::singleShot(poses.size() * 1100 + 1100,this,[=](){
+                    setDialog("我给你请了几位僵尸朋友~");
+                    QTimer::singleShot(2000,this,[=](){
+                        hideDialog();
+                        randomWalk();
+                    });
+                });
+                setDialog("孤家寡人~连个植物都不愿意呆在这晦气的地方~");
+            }
             break;
         }
         case 22:{
@@ -313,7 +343,6 @@ void Dominator::btnEvent(){
                 hideDialog();
                 randomWalk();
             });
-            GameScene* gamescene = getGameScene();
             if(gamescene){
                 QMap<int,Mower*> mowers = gamescene->getMowers();
                 for(int i=0;i<5;i++){
@@ -331,7 +360,6 @@ void Dominator::btnEvent(){
                 hideDialog();
                 randomWalk();
             });
-            GameScene* gamescene = getGameScene();
             if(gamescene){
                 QMap<int,Mower*> mowers = gamescene->getMowers();
                 QList<int> exist;//得到现存小推车
@@ -357,7 +385,6 @@ void Dominator::btnEvent(){
             //5
         case 50:{
             //加子弹威力
-            GameScene* gamescene = getGameScene();
             if(gamescene){
                 for(int r=0;r<5;r++){
                     for(int c=0;c<9;c++){
@@ -379,7 +406,6 @@ void Dominator::btnEvent(){
         }
         case 51:{
             //加子弹速度
-            GameScene* gamescene = getGameScene();
             if(gamescene){
                 for(int r=0;r<5;r++){
                     for(int c=0;c<9;c++){
@@ -410,16 +436,32 @@ PlantType Dominator::getSacrificedFromBtnId(int btnId){
     //你可以在这里实现boss数值逻辑
     switch (btnId) {
     case 0:
+    {
+        sacrifiedPlantName = QString("往日种种.....豌豆射手和你也真是一对苦命鸳鸯啊o(TヘTo)");
+        setAttachment(":/res/GameRes/images/kmyy(1).png",QPointF(-100,-30));
         return PlantType::PEASHOOTER;
+    }
     case 1:
+    {
+        sacrifiedPlantName = QString("土豆地雷的爱虽然廉价，但这已经是他的全部了");
         return PlantType::POTATOMINE;
+    }
 
     case 2:
+    {
+        sacrifiedPlantName = QString("樱桃炸弹说到时候会到你家找你商量");
         return PlantType::CHEERYBOMB;
+    }
     case 3:
+    {
+        sacrifiedPlantName = QString("愿意为你扛下所有，也要选择抛弃吗");
         return PlantType::WALLNUT;
+    }
     case 4:
+    {
+        sacrifiedPlantName = QString("寒冰射手好像变得更冷了.....");
         return PlantType::SNOWPEASHOOTER;
+    }
     default:
     {
         qDebug()<<"get no plant";
@@ -478,19 +520,33 @@ void Dominator::hideDialog(){
 void Dominator::ZombieGenerate(ZombieType zombieType,int row,int x){
     GameScene* gamescene = getGameScene();
     if(gamescene){
+
         gamescene->ZombieGenerate(zombieType,row,x);
+
     }
 }
 void Dominator::ZombieGenerate(QList<QPointF> poses){
     for(int i=0;i<poses.size();i++){
-        QTimer::singleShot(i * 0.5 * 1000 + 100,this,[=](){//没0.5秒收割一个，每次间隔0.1s
-            Animate(this).duration(AnimationType::Move,0.5 * 1000)//0.5s 内移除
+        attachment->setPixmap(QPixmap(":/res/GameRes/images/mahosteel(1).png"));
+        QTimer::singleShot(i  * (1000 + 100) + 100,this,[=](){//没0.5秒收割一个，每次间隔0.1s
+            Animate(this).duration(AnimationType::Move,1 * 1000)//0.5s 内移除
                 .shape(AnimationType::Move,QEasingCurve::InOutCubic).move(poses[i],false)
                 .finish(AnimationType::Move,[=](){
+                    qDebug()<<"本小姐在这里";
+                    // int pw = attachment->pixmap().rect().width();
+                    // int ph = attachment->pixmap().rect().height();
+                    // attachment->pixmap().scaled(2 * pw,2 * ph);
+                    // QTimer::singleShot(500,this,[=](){
+                    //     attachment->pixmap().scaled(pw,ph);
+                    // });
                     ZombieGenerate(ZombieType::NormalZombie,coordinate.getRow(poses[i].y()),poses[i].x());
                 });
         });
     }
+    //结束后取消魔法棒
+    QTimer::singleShot(poses.size() * 1100 + 1000,this,[=](){
+        attachment->setPixmap(QPixmap());
+    });
 }
 //移除僵尸
 void Dominator::wipeZombie(QPointF pos,int num){
@@ -735,6 +791,10 @@ bool Dominator::sacrifyPlant(PlantType planttype){
         }
     }
     return false;
+}
+
+void Dominator::setTemporalPix(QString pixPath,QPointF){
+
 }
 
 void Dominator::sacrifyImpactBoss(PlantType planttype){
