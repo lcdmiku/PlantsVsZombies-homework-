@@ -255,24 +255,35 @@ void Dominator::btnEvent(){
         }
             //2
         case 20:{
-            int cnt = 0;
-            for(int i=0;i<3;i++){
-                PlantType planttype = getRandomPlantType();
-                int r = QRandomGenerator::global()->bounded(0,5);
-                int c = QRandomGenerator::global()->bounded(0,9);
-                while(!plant(planttype,r,c)){
-                    if(++cnt>=50){
-                        break;
-                    }
-                    int r = QRandomGenerator::global()->bounded(0,5);
-                    int c = QRandomGenerator::global()->bounded(0,9);
+            hideDialog();
+            attachment->setPixmap(QPixmap(":/res/GameRes/images/mahosteel(1).png"));
+            //获取有植物的土地
+            QList<PlantArea*> areas = gamescene->filterGameScene<PlantArea>([](PlantArea* area){
+                return area->getIsPlantable();
+            });
+            if(!areas.empty()){
+                for(int i=0;i<3;i++){
+                    int gen = QRandomGenerator::global()->bounded(0,areas.size());
+                    PlantArea *area = areas[gen];
+                    PlantType planttype = getRandomPlantType();
+                    int r = area->r();
+                    int c = area->c();
+                    QTimer::singleShot(i * (1000+100) + 100,this,[=](){
+                        Animate(this).duration(AnimationType::Move,1000)
+                            .move(QPointF(coordinate.getX(c),coordinate.getY(r)),false)
+                            .finish(AnimationType::Move,[=](){
+                            plant(planttype,r,c);
+                        });
+                    });
                 }
             }
-            setDialog("本小姐记性不好，不记得有没有种够数~");
-            QTimer::singleShot(2 * 1000,this,[=](){
-
-                hideDialog();
-                randomWalk();
+            QTimer::singleShot(3 * 1100 + 1000,this,[=](){
+                setDialog("还不快感谢本小姐~");
+                QTimer::singleShot(2000,this,[=](){
+                    resetAttachment();
+                    hideDialog();
+                    randomWalk();
+                });
             });
             break;
         }

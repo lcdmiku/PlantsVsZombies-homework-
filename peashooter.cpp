@@ -31,7 +31,7 @@ Peashooter::Peashooter(QGraphicsObject *parent)
             }
         }
     });
-    m_detectTimer->start(1500);//1.5 s 检查一次，相当与每1.5 s攻速
+    m_detectTimer->start(1500 / bulletSpeedRate);//1.5 s 检查一次，相当与每1.5 s攻速
     //
     Peashooter::plantAction();
 }

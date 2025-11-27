@@ -33,7 +33,7 @@ SnowPeashooter::SnowPeashooter(QGraphicsObject *parent)
             }
         }
     });
-    m_detectTimer->start(1500);
+    m_detectTimer->start(1500 / bulletSpeedRate);//加快攻速
     //
     SnowPeashooter::plantAction();
 }
