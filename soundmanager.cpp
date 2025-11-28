@@ -1,5 +1,6 @@
 #include "soundmanager.h"
 #include"gamescene.h"
+
 SoundManager::SoundManager(GameScene* gamescene):gamescene(gamescene),
     players(),audios(),soundEffects()
 {
@@ -8,22 +9,37 @@ SoundManager::SoundManager(GameScene* gamescene):gamescene(gamescene),
 }
 
 void SoundManager::playSoundEffect(const QString& soundPath){
-    QMediaPlayer* player = new QMediaPlayer(gamescene);
-    QAudioOutput* audioOutput = new QAudioOutput(gamescene);
-    players[soundPath].push_back(player);
-    audios[soundPath].push_back(audioOutput);
-    //
-    audioOutput->setVolume(0.5);
-    player->setAudioOutput(audioOutput);
-    player->setSource(soundPath);
-    player->play();
+    QSoundEffect *soundEffect = new QSoundEffect();
+    // 设置声音源文件的路径
+    soundEffect->setSource(QUrl(soundPath));
+    // 音频循环的次数
+    soundEffect->setLoopCount(1);
+    // 音量
+    soundEffect->setVolume(1);
+    soundEffect->play();
 
-    QMediaPlayer::connect(player,&QMediaPlayer::playbackStateChanged,player,[=](){
-        if(player->playbackState() == QMediaPlayer::StoppedState){
-            player->deleteLater();
-            audioOutput->deleteLater();
+    // 连接信号，当播放完毕时，自动销毁对象。
+    QSoundEffect::connect(soundEffect, &QSoundEffect::playingChanged, [soundEffect] () {
+        if (soundEffect->isPlaying()) {
+            soundEffect->deleteLater();
         }
     });
+    // QMediaPlayer* player = new QMediaPlayer(gamescene);
+    // QAudioOutput* audioOutput = new QAudioOutput(gamescene);
+    // players[soundPath].push_back(player);
+    // audios[soundPath].push_back(audioOutput);
+    // //
+    // audioOutput->setVolume(0.5);
+    // player->setAudioOutput(audioOutput);
+    // player->setSource(soundPath);
+    // player->play();
+
+    // QMediaPlayer::connect(player,&QMediaPlayer::playbackStateChanged,player,[=](){
+    //     if(player->playbackState() == QMediaPlayer::StoppedState){
+    //         player->deleteLater();
+    //         audioOutput->deleteLater();
+    //     }
+    // });
 }
 SoundManager::~SoundManager() {
     QMutexLocker locker(&cacheMutex);  // 加锁保证线程安全
