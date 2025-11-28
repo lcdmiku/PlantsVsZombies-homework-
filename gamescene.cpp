@@ -603,7 +603,7 @@ void GameScene::addItem(MyObject* item){
 }
 //析构函数
 GameScene::~GameScene(){
-    
+    delete soundManager;
     // delete shovel; // 场景会自动删除这些 item
     // delete gameBg;
 }

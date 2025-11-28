@@ -81,7 +81,7 @@ void Dominator::waveEvent(){
         }
         case 1:{
             //1
-                QTimer::singleShot(10 * 1000,this,[=](){
+                QTimer::singleShot(15 * 1000,this,[=](){
                     QVector<QString> btnStrs;
                     QVector<int> btnIds;
                     btnStrs.push_back("借300阳光~");
@@ -288,6 +288,7 @@ void Dominator::btnEvent(){
             break;
         }
         case 21:{
+            hideDialog();
             QList<QPointF> poses;
             for (int i = 0; i < 2; ++i) {
                 int r = QRandomGenerator::global()->bounded(0,5);
@@ -524,6 +525,7 @@ void Dominator::setDialog(QString info,const QVector<QString>& btnStrs,const QVe
 //隐藏对话框
 void Dominator::hideDialog(){
     if (dialog->isVisible()) {
+        dialog->setDialog("");//将其置空
         dialog->hide();
     }
 }
