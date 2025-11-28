@@ -24,6 +24,7 @@ public:
     //播放短时音效
     void playSoundEffect(const QString& soundPath);
     void cacheSoundPlay(const QString& soundPath);
+    void mediaSoundPlay(const QString& soundPath);
     void disposalPlay(const QString& soundPath);
     void initSound(const QString& soundPath);
     SoundManager(GameScene* gamescene);

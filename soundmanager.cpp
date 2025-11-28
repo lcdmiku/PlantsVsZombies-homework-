@@ -10,12 +10,13 @@ SoundManager::SoundManager(GameScene* gamescene):gamescene(gamescene),
     qputenv("QT_SOUND_EFFECT_DEBUG", "0");
     initSound("qrc:/res/GameRes/audio/lawnmower.wav");
     initSound("qrc:/res/GameRes/audio/plant1.wav");
+    initSound("qrc:/res/GameRes/audio/points.wav");
+    initSound("qrc:/res/GameRes/audio/winmusic.mp3");
 
 }
 
 void SoundManager::playSoundEffect(const QString& soundPath){
-    cacheSoundPlay(soundPath);
-
+    mediaSoundPlay(soundPath);
 }
 SoundManager::~SoundManager() {
     QMutexLocker locker(&cacheMutex);  // 加锁保证线程安全
@@ -128,6 +129,25 @@ void SoundManager::disposalPlay(const QString& soundPath){
         if (!soundEffect->isPlaying()) {
             usingSounds[soundPath]--;
             soundEffect->deleteLater();
+        }
+    });
+}
+
+void SoundManager::mediaSoundPlay(const QString& soundPath){
+    QMediaPlayer* player = new QMediaPlayer(gamescene);
+    QAudioOutput* audioOutput = new QAudioOutput(gamescene);
+    players[soundPath].push_back(player);
+    audios[soundPath].push_back(audioOutput);
+    //
+    audioOutput->setVolume(0.5);
+    player->setAudioOutput(audioOutput);
+    player->setSource(soundPath);
+    player->play();
+
+    QMediaPlayer::connect(player,&QMediaPlayer::playbackStateChanged,player,[=](){
+        if(player->playbackState() == QMediaPlayer::StoppedState){
+            player->deleteLater();
+            audioOutput->deleteLater();
         }
     });
 }

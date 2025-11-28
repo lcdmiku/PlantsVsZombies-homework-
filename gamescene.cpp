@@ -285,10 +285,10 @@ void GameScene::GameStart(){
     emit waveStart(0);
     if(flagMeter) flagMeter->showMeter();
 
-    //DEBUG: 10秒后直接触发胜利
-    // QTimer::singleShot(10000, this, [=](){
+    // DEBUG: 10秒后直接触发胜利
+    // QTimer::singleShot(1000, this, [=](){
     //     qDebug() << "DEBUG: Triggering player victory.";
-    //     showPlayerWon();
+    //     showPlayerWon(QPointF(500,600));
     // });
 
     //Debug: 10秒后触发僵尸胜利
@@ -678,7 +678,7 @@ void GameScene::showPlayerWon(QPointF pos){
     bgMus->stop();
 
     // 播放胜利音乐
-    playSoundEffect("qrc:/res/GameRes/audio/winmusic.mp3");
+    // playSoundEffect("qrc:/res/GameRes/audio/winmusic.mp3");
 
     // 清除所有僵尸
     emit GamePause();

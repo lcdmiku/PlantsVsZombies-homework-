@@ -1,6 +1,7 @@
 #include "trophy.h"
 #include "animate.h"
 #include <QDebug>
+#include"coordinate.h"
 
 Trophy::Trophy(QGraphicsObject *parent)
     : MyObject(parent, "", Type::Other), isClicked(false) // 传空路径，避免 MyObject 创建 movie
@@ -15,6 +16,7 @@ Trophy::Trophy(QGraphicsObject *parent)
     // 断开 MyObject 默认的 GameOver -> deleteLater 连接
     // 因为 Trophy 的销毁将由 GameScene 的销毁来触发，避免重复删除或时序问题
     disconnect(this, &MyObject::GameOver, this, &QGraphicsObject::deleteLater);
+    this->setScale(0.5);
 }
 
 QRectF Trophy::boundingRect() const
@@ -50,15 +52,18 @@ void Trophy::mousePressEvent(QGraphicsSceneMouseEvent *event)
     if (isClicked) return; // 防止重复点击
 
     if (event->button() == Qt::LeftButton) {
+        //播放音乐
+        playSoundEffect("qrc:/res/GameRes/audio/winmusic.mp3");
         isClicked = true;
         // 点击后自动匀速放大
         // 使用 Animate 类，设置一个较大的目标缩放值和较长的持续时间
         // 例如：在 5 秒内放大到 20 倍
-        Animate(this).duration(AnimationType::Scale, 2000).scale(50.0).finish(AnimationType::Scale, [=](){
+        Animate(this).duration(AnimationType::Move,2000).move(QPointF(Coordinate().getX(4),Coordinate().getY(2)),false);
+        Animate(this).duration(AnimationType::Scale, 2000).scale(2.0).finish(AnimationType::Scale, [=](){
             qDebug() << "结束";
             // 使用 QTimer::singleShot 延后触发，避免在动画回调栈中直接销毁场景导致卡死
             // 增加延时到 500ms，确保动画系统完全退出
-            QTimer::singleShot(500, this, [=](){
+            QTimer::singleShot(2500, this, [=](){
                 emit victoryAnimationFinished();
             });
         });
