@@ -29,6 +29,7 @@
 
 #include<QGraphicsSceneMouseEvent>
 #include "coordinate.h"
+#include"soundmanager.h"
 
 class Dominator;
 
@@ -58,6 +59,7 @@ class GameScene : public QGraphicsScene
     //音效
     QMediaPlayer *bgMus;//背景音播放器
     QAudioOutput *audioOutput;
+    SoundManager* soundManager;
 
     //背景
     QString bgPath;
@@ -139,6 +141,10 @@ public:
     //处理玩家胜利
     void showPlayerWon(QPointF pos = QPointF(600, 300));
     void showPlayerWon();
+    //处理音频缓存
+    //播放短时音效
+    void playSoundEffect(const QString& soundPath);
+
     //场景元素过滤
     template<typename T>
     QList<T*> filterGameScene(std::function<bool(T*)> functor){
@@ -170,6 +176,6 @@ signals:
     
 };
 
-//播放短时音效
-void playSoundEffect(const QString& soundPath);
+
+
 #endif // GAMESCENE_H

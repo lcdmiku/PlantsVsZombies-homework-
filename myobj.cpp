@@ -148,3 +148,13 @@ void MyObject::GameContinue(){
     Animate(this).resume(AnimationType::All);
     qDebug()<<"continue";
 }
+//处理音频
+void MyObject::playSoundEffect(const QString& soundPath){
+    gameScene = getGameScene();
+    if(gameScene){
+        gameScene->playSoundEffect(soundPath);
+    }
+    else{
+        qDebug()<<"MyObject can't find the gameScene";
+    }
+}

@@ -6,6 +6,7 @@ int Bullet::delNum = 0;
 
 Bullet::Bullet(QString objPath,int power)
     :MyObject(nullptr,objPath,Type::Bullet),power(power),speed(200),bomb()// p/s
+    ,bombSound("qrc:/res/GameRes/audio/splat3.wav")
 {
     bulletNum++;
     qDebug()<<QString::number(bulletNum);
@@ -56,6 +57,7 @@ void Bullet::dealBomb(){
         isDead = true;
         setCurrentGif();
         ToCurrentGif();
+        playSoundEffect(bombSound);
         QTimer::singleShot(100,this,[=](){
             if (scene()) {
                 scene()->removeItem(this);

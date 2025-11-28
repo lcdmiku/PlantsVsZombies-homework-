@@ -26,6 +26,7 @@ public:
 
 protected:
     QString bomb;//子弹打中敌人动画gif路径
+    QString bombSound;
     virtual void setCurrentGif(){if(isDead && !bomb.isEmpty())CurrentGif = bomb;}
     virtual void DealZombie(Zombie *zombie);
     virtual void dealBomb();//处理子弹打中

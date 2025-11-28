@@ -63,6 +63,9 @@ public:
     //static int sunlightGenerate();
     enum Type getObjType(){return type;}
     bool IsDead(){return isDead;}
+    //处理音效
+    //播放短时音效
+    void playSoundEffect(const QString& soundPath);
     ~MyObject();
 
 protected:

@@ -10,6 +10,7 @@
 #include<QDebug>
 #include "zomboni.h"
 
+
 GameScene::GameScene(QObject *parent,GameLevelData* data)
     : QGraphicsScene(parent),settingsMenu(nullptr),levelData(data),
     moment(0),currWave(0),waveMoment(0),
@@ -17,7 +18,8 @@ GameScene::GameScene(QObject *parent,GameLevelData* data)
     plantAreaMap(5,QList<PlantArea*>(9,nullptr)),
     bgPath(data->backgroundImage),gameBg(nullptr),
     bgMus(new QMediaPlayer(this)),audioOutput(new QAudioOutput(this)),
-    dominator(nullptr), flagMeter(nullptr)
+    dominator(nullptr), flagMeter(nullptr),
+    soundManager(new SoundManager(this))
 {
     //检查gameleveldata是否为空,若为空，输出问题并退出
     if(!levelData){
@@ -605,24 +607,7 @@ GameScene::~GameScene(){
     // delete shovel; // 场景会自动删除这些 item
     // delete gameBg;
 }
-//播放短时音效
-void playSoundEffect(const QString& soundPath){
-    QMediaPlayer* player = new QMediaPlayer;
-    QAudioOutput* audioOutput = new QAudioOutput;
 
-    audioOutput->setVolume(0.5);
-
-    player->setAudioOutput(audioOutput);
-    player->setSource(soundPath);
-    player->play();
-    //内存管理
-    QMediaPlayer::connect(player, &QMediaPlayer::playbackStateChanged, player, [=](QMediaPlayer::PlaybackState state) {
-        if (state == QMediaPlayer::StoppedState) {
-            player->deleteLater();
-            audioOutput->deleteLater();
-        }
-    });
-}
 
 void GameScene::showZombieWon(){
     // 停止波次计时
@@ -743,3 +728,11 @@ QList<Zombie*> GameScene::getZombiesRow(int r){
 //     }
 //     QGraphicsScene::mousePressEvent(event);
 // }
+
+
+//播放短时音效,use cache
+void GameScene::playSoundEffect(const QString& soundPath){
+    if(soundManager){
+        soundManager->playSoundEffect(soundPath);
+    }
+}

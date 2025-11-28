@@ -153,7 +153,7 @@ void PlantArea::dropEvent(QGraphicsSceneDragDropEvent *event) {
 bool PlantArea::removePlant(){
     if(Myplant)//避免空指针
     {
-        playSoundEffect("qrc:/res/GameRes/audio/tap.wav");
+        playSoundEffect("qrc:/res/GameRes/audio/seedlift.wav");
         Myplant->DealDead();
         Myplant = nullptr;
         setEmpty(true);
