@@ -15,11 +15,11 @@ GameLevelData::GameLevelData():
     waveTotWeight(waveNum,0),
 
     waveDuration({10,60,60,60,60,60,60}),
-    waveLimits({10,12,20,32,48,60,10}),
+    waveLimits({10,10,18,30,45,55,10}),
 
     map(5,QList<int>(9,0)),
     zomboniSummonInterval(10000), // 默认10秒
-    zomboniSelfSummonProb(5),      // 默认0%
+    zomboniSelfSummonProb(2),      // 默认0%
     zomboniHPRate(1.0), // 默认100%
     zomboniSpeedRate(1.0) // 默认100%
 {
