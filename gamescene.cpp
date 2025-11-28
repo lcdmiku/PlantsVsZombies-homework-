@@ -258,7 +258,7 @@ void GameScene::sunlightGenerate(int prob){
 //进行游戏阶段
 void GameScene::GameStart(){
     //背景音
-    // playBGM(levelData->backgroundMusic);太吵了,先注释掉
+    playBGM(levelData->backgroundMusic);//太吵了,先注释掉
     //dominator
     DominatorAct();
     //shovel

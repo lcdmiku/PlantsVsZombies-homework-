@@ -3,7 +3,7 @@
 
 
 SunFlower::SunFlower(QGraphicsObject *parent)
-    :Plant(parent,":/res/GameRes/images/Plants/SunFlower/SunFlower1.gif",80),sunlightInterval(3500)
+    :Plant(parent,":/res/GameRes/images/Plants/SunFlower/SunFlower1.gif",80),sunlightInterval(4000)
 {
     timer = new QTimer();
     timer->start(sunlightInterval);

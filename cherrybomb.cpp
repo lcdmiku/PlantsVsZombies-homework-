@@ -4,7 +4,7 @@
 #include<QGraphicsEllipseItem>
 
 CherryBomb::CherryBomb(QGraphicsObject *parent)
-    :Plant(parent,":/res/GameRes/images/CherryBomb.gif",1000),power(1000)
+    :Plant(parent,":/res/GameRes/images/CherryBomb.gif",100000),power(1500)
 {
 
     //单独的射程检测区域（仅用于检测僵尸，不影响物理碰撞）

@@ -816,41 +816,41 @@ void Dominator::sacrifyImpactBoss(PlantType planttype){
     if(gamescene){
         switch (planttype) {
         case PlantType::PEASHOOTER:
-            gamescene->levelData->setZomboniInterval(15000);
-            setDialog("献祭豌豆射手 --> Boss能力-50%");
-            QTimer::singleShot(2000,this,[=](){
+            gamescene->levelData->setZomboniInterval(16000);
+            setDialog("献祭豌豆射手 --> Boss能力-40%");
+            QTimer::singleShot(3000,this,[=](){
                 hideDialog();
                 randomWalk();
             });
             break;
         case PlantType::POTATOMINE:
-            gamescene->levelData->setZomboniHPRate(0.9);
-            setDialog("献祭土豆地雷 --> Boss血量-10%");
-            QTimer::singleShot(2000,this,[=](){
+            gamescene->levelData->setZomboniHPRate(0.8);
+            setDialog("献祭土豆地雷 --> Boss血量-20%");
+            QTimer::singleShot(3000,this,[=](){
                 hideDialog();
                 randomWalk();
             });
             break;
         case PlantType::SNOWPEASHOOTER:
-            gamescene->levelData->setZomboniSpeedRate(0.8);
-            setDialog("献祭寒冰射手 --> Boss移速-20%");
-            QTimer::singleShot(2000,this,[=](){
+            gamescene->levelData->setZomboniSpeedRate(0.6);
+            setDialog("献祭寒冰射手 --> Boss移速-40%");
+            QTimer::singleShot(3000,this,[=](){
                 hideDialog();
                 randomWalk();
             });
             break;
         case PlantType::WALLNUT:
-            gamescene->levelData->setZomboniHPRate(0.8);
-            setDialog("献祭坚果墙 --> Boss血量-20%");
-            QTimer::singleShot(2000,this,[=](){
+            gamescene->levelData->setZomboniHPRate(0.7);
+            setDialog("献祭坚果墙 --> Boss血量-30%");
+            QTimer::singleShot(3000,this,[=](){
                 hideDialog();
                 randomWalk();
             });
             break;
         case PlantType::CHEERYBOMB:
-            gamescene->levelData->setZomboniInterval(10000);
-            setDialog("献祭樱桃炸弹 --> Boss能力-20%");
-            QTimer::singleShot(2000,this,[=](){
+            gamescene->levelData->setZomboniInterval(15000);
+            setDialog("献祭樱桃炸弹 --> Boss能力-25%");
+            QTimer::singleShot(3000,this,[=](){
                 hideDialog();
                 randomWalk();
             });

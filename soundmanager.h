@@ -11,7 +11,7 @@ class GameScene;
 class SoundManager
 {
 
-    const int MAXCACHE = 10;
+    const int MAXCACHE = 8;
     GameScene* gamescene;
     QMap<QString,QList<QMediaPlayer*>> players;
     QMap<QString,QList<QAudioOutput*>> audios;

@@ -8,9 +8,9 @@ Zomboni::Zomboni()
     : Zombie(":/res/GameRes/images/Zombies/Zomboni/0.gif",
              ZombieType::Zomboni,
              "",
-             49999, // HP
-             10,   // Speed
-             10000), // Attack Power (秒杀)
+             5000, // HP
+             8,   // Speed
+             800), // Attack Power (秒杀)
       mySummonInterval(10000), // 默认10秒
       mySelfSummonProbability(0) // 默认0%
 {
@@ -177,7 +177,7 @@ void Zomboni::summonZombies()
     if (spawnPoints.isEmpty()) return;
 
     // 随机生成 10-15 个僵尸
-    int count = QRandomGenerator::global()->bounded(10, 16);
+    int count = QRandomGenerator::global()->bounded(5, 9);
     
     // 定义可生成的僵尸类型列表 (排除 None 和 Zomboni 自身)
     QList<ZombieType> validTypes = {
