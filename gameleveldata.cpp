@@ -18,7 +18,7 @@ GameLevelData::GameLevelData():
     waveLimits({10,12,20,32,48,60,10}),
 
     map(5,QList<int>(9,0)),
-    zomboniSummonInterval(8000), // 默认8秒
+    zomboniSummonInterval(10000), // 默认10秒
     zomboniSelfSummonProb(5),      // 默认0%
     zomboniHPRate(1.0), // 默认100%
     zomboniSpeedRate(1.0) // 默认100%
