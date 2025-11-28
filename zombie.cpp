@@ -49,7 +49,13 @@ Zombie::Zombie(QString objPath,
     //攻击
     connect(zombieAttackTimer,&QTimer::timeout,this,[=](){
         if(attackedPlant)
+        {
             attackedPlant->Attacted(attackPower);
+            //播放啃食音效
+            playSoundEffect("qrc:/res/GameRes/audio/chompsoft.wav");
+
+        }
+
     });
     //同步计时器 ms
 
@@ -73,6 +79,7 @@ void Zombie::attack(Plant *plant){
         //启动定时器
         zombieAttackTimer->start(1000);
     }
+
 }
 
 void Zombie::setCurrentGif(){
@@ -175,6 +182,8 @@ void Zombie::dealDead(enum DieType dieType){
         });
     }
 }
+
+
 
 void Zombie::setSpeed(double rate,int duration){
     CurrentSpeedRate = rate;

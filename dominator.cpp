@@ -112,6 +112,7 @@ void Dominator::waveEvent(){
                 btnIds.push_back(20);
                 btnIds.push_back(21);
                 btnIds.push_back(22);
+                stopRandomWalk();
                 setDialog("你的植物好像没什么干劲呀～需不需要本小姐的帮助？",btnStrs,btnIds);
             });
             break;
@@ -133,6 +134,7 @@ void Dominator::waveEvent(){
                 btnStrs.push_back("不需要");
                 btnIds.push_back(30);
                 btnIds.push_back(31);
+                stopRandomWalk();
                 setDialog("本小姐有一个好主意～想不想看看本小姐的主动防御机制？",btnStrs,btnIds);
             });
             break;
@@ -147,12 +149,16 @@ void Dominator::waveEvent(){
                 });
             });
 
+            //1
             QTimer::singleShot(20 * 1000,this,[=](){
+                stopRandomWalk();
                 QVector<QString> btnStrs;
                 QVector<int> btnIds;
                 setDialog("温馨提示，长时间游戏伤眼睛，本小姐来帮你开一下护眼模式。",btnStrs,btnIds);
+                //2
                 QTimer::singleShot(1000,this,[=](){
                     hideDialog();
+                    randomWalk();
                     ProtectEyes();
                 });
             });
@@ -175,30 +181,33 @@ void Dominator::waveEvent(){
                 btnStrs.push_back("给植物加点攻速");
                 btnIds.push_back(50);
                 btnIds.push_back(51);
+                stopRandomWalk();
                 setDialog("本小姐给你最后一次加强植物的机会",btnStrs,btnIds);
             });
             break;
         }
             //boss
         case 6:{
+            //0
             QTimer::singleShot(1500,this,[=](){
                 stopRandomWalk();
                 sacrifyImpactBoss(sacrifiedPlant);
-            });
-            //1
-            QTimer::singleShot(2 * 1000,this,[=](){
-                setDialog("不好，是那个大块头！本小姐要躲远一点，这个家伙太丑了。");
-                //2
-                QTimer::singleShot(3*1000,this,[=](){
-                setDialog("本小姐会在房子里看着你的～。");
-                    //3
-                    QTimer::singleShot(1500,this,[=](){
-                        hideDialog();
-                    Animate(this).duration(AnimationType::Move,1 * 1000)
-                            .move(QPointF(coordinate.getX(-1)-100,coordinate.getY(2)),false);//1s逃离现场
+                //1
+                QTimer::singleShot(2 * 1000,this,[=](){
+                    setDialog("不好，是那个大块头！本小姐要躲远一点，这个家伙太丑了。");
+                    //2
+                    QTimer::singleShot(2*1000,this,[=](){
+                        setDialog("本小姐会在房子里看着你的～。");
+                        //3
+                        QTimer::singleShot(2500,this,[=](){
+                            hideDialog();
+                            Animate(this).duration(AnimationType::Move,1 * 1000)
+                                .move(QPointF(coordinate.getX(-1)-100,coordinate.getY(2)),false);//1s逃离现场
+                        });
                     });
                 });
             });
+
             break;
         }
         default:
@@ -816,45 +825,39 @@ void Dominator::sacrifyImpactBoss(PlantType planttype){
     if(gamescene){
         switch (planttype) {
         case PlantType::PEASHOOTER:
+        {
             gamescene->levelData->setZomboniInterval(16000);
             setDialog("献祭豌豆射手 --> Boss能力-40%");
-            QTimer::singleShot(3000,this,[=](){
-                hideDialog();
-                randomWalk();
-            });
+            // QTimer::singleShot(3000,this,[=](){
+            //     hideDialog();
+            //     randomWalk();
+            // });
             break;
+        }
         case PlantType::POTATOMINE:
+        {
             gamescene->levelData->setZomboniHPRate(0.8);
             setDialog("献祭土豆地雷 --> Boss血量-20%");
-            QTimer::singleShot(3000,this,[=](){
-                hideDialog();
-                randomWalk();
-            });
             break;
+        }
         case PlantType::SNOWPEASHOOTER:
+        {
             gamescene->levelData->setZomboniSpeedRate(0.6);
             setDialog("献祭寒冰射手 --> Boss移速-40%");
-            QTimer::singleShot(3000,this,[=](){
-                hideDialog();
-                randomWalk();
-            });
             break;
+        }
         case PlantType::WALLNUT:
+        {
             gamescene->levelData->setZomboniHPRate(0.7);
             setDialog("献祭坚果墙 --> Boss血量-30%");
-            QTimer::singleShot(3000,this,[=](){
-                hideDialog();
-                randomWalk();
-            });
             break;
+        }
         case PlantType::CHEERYBOMB:
+        {
             gamescene->levelData->setZomboniInterval(15000);
             setDialog("献祭樱桃炸弹 --> Boss能力-25%");
-            QTimer::singleShot(3000,this,[=](){
-                hideDialog();
-                randomWalk();
-            });
             break;
+        }
         default:
             break;
         }

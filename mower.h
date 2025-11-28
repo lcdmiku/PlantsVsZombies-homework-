@@ -12,6 +12,7 @@ class Mower : public MyObject
     int Hz;
     double speed;
     bool hasCollided;
+    bool hasGo;
 public:
     explicit Mower();
     void advance(int phase) override;

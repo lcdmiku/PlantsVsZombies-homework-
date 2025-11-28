@@ -2,7 +2,7 @@
 #include<QLineF>
 
 Mower::Mower()
-    :MyObject(nullptr,":/res/GameRes/images/LawnMower.png",Type::Mower),power(99999),hasCollided(false)
+    :MyObject(nullptr,":/res/GameRes/images/LawnMower.png",Type::Mower),power(99999),hasCollided(false),hasGo(false)
 {
     //刷新频率
     Hz = 30;
@@ -21,7 +21,13 @@ void Mower::advance(int phase)
 
     // 如果有僵尸向前移动
     if(hasCollided)
-    setPos(x() + speed/Hz, y());
+    {
+        if(!hasGo){
+            hasGo = true;
+            playSoundEffect("qrc:/res/GameRes/audio/lawnmower.wav");
+        }
+        setPos(x() + speed/Hz, y());
+    }
 
     QList<QGraphicsItem*> items = collidingItems();
 

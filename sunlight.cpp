@@ -1,5 +1,5 @@
 #include "sunlight.h"
-#include<QGraphicsScene>
+#include"gamescene.h"
 
 
 SunLight::SunLight()
@@ -80,11 +80,18 @@ void SunLight::beCollected(){
     connect(animation,&QPropertyAnimation::finished,this,&QObject::deleteLater);
 
     animation->start(QAbstractAnimation::DeleteWhenStopped);
+
+    GameScene* gamescene = dynamic_cast<GameScene*>(this->scene());
+    if(gamescene){
+        gamescene->playSoundEffect("qrc:/res/GameRes/audio/points.wav");//添加音效
+    }
 }
 
 void SunLight::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     if(clickable)
-    beCollected();
+    {
+        beCollected();
+    }
 
 }
 void SunLight::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {}

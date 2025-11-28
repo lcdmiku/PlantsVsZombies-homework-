@@ -31,6 +31,11 @@ void BucketZombie::setCurrentGif(){
     }
 }
 
+void BucketZombie::beHeated(int power,enum DieType dieType){
+    Zombie::beHeated(power,dieType);
+    playSoundEffect("qrc:/res/GameRes/audio/shieldhit.wav");//play hetted sound
+}
+
 void BucketZombie::Action(Plant *plant){
     Zombie::attack(plant);
 }

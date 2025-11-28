@@ -21,6 +21,7 @@ protected:
 
     //僵尸行为特征
     void Action(Plant *plant) override;
+    void beHeated(int power,enum DieType dieType) override;
     void setCurrentGif()override;
 private slots:
 

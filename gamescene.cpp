@@ -57,7 +57,7 @@ GameScene::GameScene(QObject *parent,GameLevelData* data)
     bgMus->setAudioOutput(audioOutput);
     bgMus->setLoops(-1);
     connect(settingsMenu,&SettingsMenu::volumeChanged,this,[=](int volume){
-        audioOutput->setVolume(double(volume)/100);
+        audioOutput->setVolume(qreal(volume)/100.0);
     });
     // coo = new Coordinate(0);
 

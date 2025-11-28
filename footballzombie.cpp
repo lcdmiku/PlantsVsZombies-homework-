@@ -27,8 +27,15 @@ QRectF FootballZombie::boundingRect() const {
 
 void FootballZombie::setCurrentGif(){
     Zombie::setCurrentGif();
+    qreal rate = (double)currentHp / getMaxHp();
+    if(rate<0.5)attackingGif = ":/res/GameRes/images/Zombies/FootballZombie/FootballZombieOrnLostAttack.gif";
     if(!attackedPlant){
-        CurrentGif = ":/res/GameRes/images/FootballZombieWalk.gif";
+        if(rate<0.5){
+            CurrentGif = ":/res/GameRes/images/Zombies/FootballZombie/FootballZombieOrnLost.gif";
+        }
+        else {
+            CurrentGif = ":/res/GameRes/images/FootballZombieWalk.gif";
+        }
     }
 }
 

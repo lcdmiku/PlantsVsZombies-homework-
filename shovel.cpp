@@ -4,6 +4,7 @@
 #include<QDebug>
 #include<QMimeData>
 #include<QDrag>
+#include"gamescene.h"
 
 Shovel::Shovel()
     :QGraphicsPixmapItem(QPixmap(":/res/GameRes/images/Shovel.png")),isSelected(false),startPos(750,5)
@@ -15,6 +16,13 @@ Shovel::Shovel()
 
 void Shovel::mousePressEvent(QGraphicsSceneMouseEvent *ev){
     isSelected = !isSelected;
+    GameScene* gamescene = dynamic_cast<GameScene*>(this->scene());
+    if(gamescene){
+        gamescene->playSoundEffect("qrc:/res/GameRes/audio/shovel.wav");
+    }
+    else{
+        qDebug()<<"can't";
+    }
 
 }
 

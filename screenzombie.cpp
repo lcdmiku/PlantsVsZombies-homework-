@@ -33,6 +33,11 @@ void ScreenZombie::setCurrentGif(){
     }
 }
 
+void ScreenZombie::beHeated(int power,enum DieType dieType){
+    Zombie::beHeated(power,dieType);
+    playSoundEffect("qrc:/res/GameRes/audio/shieldhit2.wav");
+}
+
 void ScreenZombie::Action(Plant *plant){
     Zombie::attack(plant);
 }

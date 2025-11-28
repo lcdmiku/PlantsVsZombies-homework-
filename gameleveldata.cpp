@@ -14,7 +14,7 @@ GameLevelData::GameLevelData():
     waveNum(7),
     waveTotWeight(waveNum,0),
 
-    waveDuration({10,60,60,60,60,60,60}),
+    waveDuration({25,60,60,60,60,60,60}),
     waveLimits({10,10,18,30,45,55,10}),
 
     map(5,QList<int>(9,0)),

@@ -18,7 +18,7 @@ protected:
     QRectF boundingRect() const override;
 
     //myobject特征
-
+    void beHeated(int power,enum DieType dieType) override;
     //僵尸行为特征
     void Action(Plant *plant) override;
     void setCurrentGif()override;
