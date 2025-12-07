@@ -10,6 +10,8 @@ MainScene::MainScene(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainScene),scene(nullptr),view(nullptr)
 {
+    //初始化settings
+    settingInit();
     //设置标题
     setWindowTitle("Plants Fight Zombies");
     setAcceptDrops(true);
@@ -160,7 +162,41 @@ void MainScene::GamePre(){
 
 }
 
+void MainScene::settingInit(){
 
+        // 如果配置中没有 MapInfo 节，写入默认配置（以 QVariantList 格式写入，便于后续 .toList() 读取）
+        QSettings *settings = new QSettings("config.ini",QSettings::IniFormat);
+        settings->beginGroup("MapInfo");
+        bool needInitMap = settings->childKeys().isEmpty();
+        settings->endGroup();
+        if(needInitMap){
+            qDebug() << "config.ini MapInfo missing — writing default MapInfo.";
+            QVariantList defaultRow;
+            for(int k=0;k<9;k++) defaultRow << 0;
+            settings->beginGroup("MapInfo");
+            for(int i=0;i<5;i++){
+                settings->setValue(QString("row%1").arg(i), defaultRow);
+            }
+            QVariantList mowerRow;
+            for(int i=0;i<5;i++) mowerRow << 1;
+            settings->setValue("MowerRow", mowerRow);
+            QVariantList zombieRow;
+            for(int i=0;i<5;i++) zombieRow << i;
+            settings->setValue("zombieRow", zombieRow);
+            settings->setValue("MowerPower", 99999);
+
+            settings->endGroup();
+            settings->sync();
+        }
+        settings->beginGroup("LevelInfo");
+        if(settings->childKeys().isEmpty()){
+            settings->setValue("unlockedLevel",1);//解锁关卡数
+            settings->setValue("limitLevel",5);//最多关卡数
+        }
+        settings->endGroup();
+        delete settings;
+
+}
 MainScene::~MainScene()
 {
 

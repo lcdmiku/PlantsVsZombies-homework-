@@ -40,7 +40,7 @@ void SelectLevelWidget::addLevelButton(){
     setting.beginGroup("LevelInfo");
     int unlocked = setting.value("unlockedLevel").toInt();
     // 创建关卡选择按钮
-    for (int var = currentNum; var <= unlocked; ++var) {
+    for (int var = currentNum+1; var <= unlocked; ++var) {
         QString levelName = "关卡" + QString::number(var);
         addLevelButton( ":/res/GameRes/images/interface/baolingqiu.png", levelName);
     }

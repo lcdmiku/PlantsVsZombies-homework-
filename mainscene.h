@@ -64,6 +64,7 @@ private:
     StartWidget *startWidget;
     SelectLevelWidget *selectLevelWidget;
 
+    void settingInit();
     void GamePre();
 
 
