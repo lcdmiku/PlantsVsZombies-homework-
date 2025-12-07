@@ -14,7 +14,7 @@ Zomboni::Zomboni()
       mySummonInterval(10000), // 默认10秒
       mySelfSummonProbability(0) // 默认0%
 {
-    // 冰车僵尸通常免疫减速（可选实现，这里先保留默认行为）
+    // 冰车僵尸免疫减速
     
     // 初始化技能计时器
     skillTimer = new QTimer(this);
@@ -55,7 +55,7 @@ Zomboni::~Zomboni()
 
 void Zomboni::Action(Plant *plant)
 {
-    // 冰车僵尸不进行常规攻击（啃食），而是直接碾压
+    // 冰车僵尸不进行常规攻击，而是直接碾压
     if (plant) {
         crushPlant(plant);
     }
@@ -66,9 +66,7 @@ void Zomboni::crushPlant(Plant *plant)
     if (!plant) return;
 
     // 造成巨大伤害，直接摧毁植物
-    // 注意：地刺王(Spikerock)可能会对冰车造成伤害并爆胎，这里暂不实现复杂交互
     plant->Attacted(attackPower);
-    
     // 冰车继续移动，不需要 stopMoving()
 }
 
@@ -91,8 +89,6 @@ void Zomboni::setCurrentGif()
     // 如果 GIF 路径改变了，则更新
     if (CurrentGif != newGif) {
         CurrentGif = newGif;
-        // 调用父类或 MyObject 的 changeGif 方法来刷新动画
-        // 注意：MyObject::changeGif 会重置 movie
         changeGif(CurrentGif);
     }
 }
@@ -138,9 +134,7 @@ void Zomboni::summonZombies()
 {
     if (isDead) return;
     
-    // 获取 GameScene 指针
-    // 注意：MyObject::gameScene 是 protected 的，可以直接访问
-    // 但为了安全，最好重新获取一次或确保它有效
+
     if (!gameScene) {
         gameScene = getGameScene();
         if (!gameScene) return;
@@ -207,9 +201,6 @@ void Zomboni::summonZombies()
 
         x += QRandomGenerator::global()->bounded(-10,10); //随机偏移
 
-        // 调用 GameScene 的 ZombieGenerate
-        // 注意：ZombieGenerate(type, row, x) 会设置位置为 (x, 100 + 94*row)
-        // 我们传入 PlantArea 的 x 坐标，这样僵尸就会生成在 PlantArea 所在的列
         gameScene->ZombieGenerate(randomType, r, x);
     }
 

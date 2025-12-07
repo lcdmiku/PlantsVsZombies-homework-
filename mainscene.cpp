@@ -61,13 +61,21 @@ MainScene::MainScene(QWidget *parent)
         stackedWidget->setCurrentWidget(selectLevelWidget);
     });
 
-    connect(selectLevelWidget, &SelectLevelWidget::levelSelected, this, [=](){
+    connect(selectLevelWidget, &SelectLevelWidget::levelSelected, this, [=](int level){
         // 创建新的 GameScene
+        GameLevelData* leveldata = GameLevelDataFactory(QString::number(level));//先得到leveldata
+        if(!leveldata){
+            qDebug()<<"gameleveldata is nullptr";
+            leveldata = GameLevelDataFactory("1");
+        }
         if(scene) {
             delete scene;
             scene = nullptr;
         }
-        scene = new GameScene(this);
+        scene = new GameScene(this,leveldata);
+        connect(scene,&GameScene::GameSuccess,selectLevelWidget,[=](){
+            selectLevelWidget->addLevelButton();
+        });
         scene->setMenu(settingsMenu);
 
         // 创建新的 View
@@ -94,7 +102,7 @@ MainScene::MainScene(QWidget *parent)
             // 防止重复调用导致崩溃
             if (!scene || !view) return;
 
-            stackedWidget->setCurrentWidget(startWidget);
+            stackedWidget->setCurrentWidget(selectLevelWidget);
             menu_btn->hide();
 
             // 延迟删除场景和视图

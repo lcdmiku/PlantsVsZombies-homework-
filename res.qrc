@@ -291,5 +291,6 @@
         <file>GameRes/images/mahosteel.jpg</file>
         <file>GameRes/images/mahosteel(1).png</file>
         <file>GameRes/images/kmyy(1).png</file>
+        <file>GameRes/images/xana_small.png</file>
     </qresource>
 </RCC>

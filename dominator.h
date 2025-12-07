@@ -33,7 +33,7 @@ private:
 
 public:
     //get
-    Dominator();
+    Dominator(const QString& Path = QString(":/res/GameRes/images/scarysan_small.png"));
     virtual void setCurrentGif();//设计各种情况的图片gif,或许可以利用来进行类继承
     void initEvent();//事件初始化
     //

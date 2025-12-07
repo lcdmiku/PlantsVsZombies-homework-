@@ -5,12 +5,14 @@
 #include <QDebug>
 
 SelectLevelWidget::SelectLevelWidget(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent),currentNum(0)
 {
     setFixedSize(900, 600);
     setAutoFillBackground(true);
     
     // 设置背景
+    // //archive
+    // settings = new QSettings("config.ini",QSettings::IniFormat);
     QPalette palette;
     palette.setBrush(QPalette::Window, QBrush(QPixmap(":/res/GameRes/images/interface/Challenge_Background.jpg")
                                                   .scaled(size(),
@@ -18,14 +20,36 @@ SelectLevelWidget::SelectLevelWidget(QWidget *parent)
                                                           Qt::SmoothTransformation)));
     setPalette(palette);
 
+    //open settting
+    QSettings setting = QSettings("config.ini",QSettings::IniFormat);
+    setting.beginGroup("LevelInfo");
+    int unlocked = setting.value("unlockedLevel").toInt();
+    setting.endGroup();
     // 创建关卡选择按钮
-    addLevelButton(50, 100, ":/res/GameRes/images/interface/baolingqiu.png", "关卡1");
-    //创建多个关卡例子
-    // addLevelButton(200, 100, ":/res/GameRes/images/interface/baolingqiu.png", "关卡2");
-}
+    for (int var = 1; var <= unlocked; ++var) {
+        QString levelName = "关卡" + QString::number(var);
+        addLevelButton( ":/res/GameRes/images/interface/baolingqiu.png", levelName);
+    }
 
+    //创建多个关卡例子
+
+}
+void SelectLevelWidget::addLevelButton(){
+    //open settting
+    QSettings setting = QSettings("config.ini",QSettings::IniFormat);
+    setting.beginGroup("LevelInfo");
+    int unlocked = setting.value("unlockedLevel").toInt();
+    // 创建关卡选择按钮
+    for (int var = currentNum; var <= unlocked; ++var) {
+        QString levelName = "关卡" + QString::number(var);
+        addLevelButton( ":/res/GameRes/images/interface/baolingqiu.png", levelName);
+    }
+    setting.endGroup();
+
+}
 void SelectLevelWidget::addLevelButton(int x, int y, const QString& iconPath, const QString& levelName)
 {
+    currentNum++;//
     // 创建关卡选择按钮 (使用 Challenge.png 作为背景)
     QPushButton *btn = new QPushButton(this);
     QPixmap btnPix(":/res/GameRes/images/interface/Challenge.png");
@@ -58,6 +82,14 @@ void SelectLevelWidget::addLevelButton(int x, int y, const QString& iconPath, co
     int labelX = x + (btn->width() - nameLabel->width()) / 2;
     int labelY = y + btn->height() - 35; // 间距调出来的，喜欢继续
     nameLabel->move(labelX, labelY);
+    int level = currentNum;
+    connect(btn, &QPushButton::clicked, this, [=](){
+        emit levelSelected(level);
+    });
+}
 
-    connect(btn, &QPushButton::clicked, this, &SelectLevelWidget::levelSelected);
+void SelectLevelWidget::addLevelButton(const QString& iconPath, const QString& levelName){
+    int x = 100 + 150 * (currentNum%5);
+    int y = 100 + 120 * (currentNum/5);
+    addLevelButton(x,y,iconPath,levelName);
 }

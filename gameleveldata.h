@@ -56,6 +56,9 @@ public:
 
     QList<ZombieData> zombieData;//各类僵尸信息
 
+    //Dominator 实例
+    Dominator* dominator;//将dominator实例存在这里，再赋值给gamescene
+
     QString backgroundMusic;//背景音乐路径
     //函数
     //在僵尸池里抽取僵尸
@@ -73,7 +76,18 @@ class GameLevelData_1: public GameLevelData
 public:
     GameLevelData_1();
 };
+class GameLevelData_2: public GameLevelData
+{
 
+public:
+    GameLevelData_2();
+};
+class GameLevelData_3: public GameLevelData
+{
+
+public:
+    GameLevelData_3();
+};
 GameLevelData * GameLevelDataFactory(const QString &eName);
 
 

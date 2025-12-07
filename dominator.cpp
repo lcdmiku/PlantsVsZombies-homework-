@@ -9,7 +9,7 @@
 #include<QTimer>
 
 
-Dominator::Dominator():MyObject(nullptr,QString(":/res/GameRes/images/scarysan_small.png"),Type::Dominator),
+Dominator::Dominator(const QString& Path):MyObject(nullptr,Path,Type::Dominator),
     speed(100),speedRate(1.0),coordinate(),eventInit(false),
     sunlightTax(0), eyeProtectionOn(false), eyeProtectionLayer(nullptr),
     attachment(new QGraphicsPixmapItem(this))
@@ -122,7 +122,7 @@ void Dominator::waveEvent(){
             QTimer::singleShot(2 * 1000,this,[=](){
                 setDialog("有些抱着铁门的僵尸要来了～他们的铁门可以挡住很多豌豆子弹");
                 //2
-                QTimer::singleShot(1000,this,[=](){
+                QTimer::singleShot(2000,this,[=](){
                     hideDialog();
                 });
             });
@@ -144,7 +144,7 @@ void Dominator::waveEvent(){
             QTimer::singleShot(2 * 1000,this,[=](){
                 setDialog("橄榄球僵尸跑得飞快，可不容易防御～");
                 //2
-                QTimer::singleShot(1000,this,[=](){
+                QTimer::singleShot(2000,this,[=](){
                     hideDialog();
                 });
             });
@@ -156,7 +156,7 @@ void Dominator::waveEvent(){
                 QVector<int> btnIds;
                 setDialog("温馨提示，长时间游戏伤眼睛，本小姐来帮你开一下护眼模式。",btnStrs,btnIds);
                 //2
-                QTimer::singleShot(1000,this,[=](){
+                QTimer::singleShot(2000,this,[=](){
                     hideDialog();
                     randomWalk();
                     ProtectEyes();
@@ -169,7 +169,7 @@ void Dominator::waveEvent(){
             QTimer::singleShot(2 * 1000,this,[=](){
                 setDialog("准备好迎接更加猛烈的攻势了吗~");
                 //2
-                QTimer::singleShot(1000,this,[=](){
+                QTimer::singleShot(2000,this,[=](){
                     hideDialog();
                 });
             });
@@ -196,13 +196,13 @@ void Dominator::waveEvent(){
                 QTimer::singleShot(2 * 1000,this,[=](){
                     setDialog("不好，是那个大块头！本小姐要躲远一点，这个家伙太丑了。");
                     //2
-                    QTimer::singleShot(2*1000,this,[=](){
+                    QTimer::singleShot(2 * 1000,this,[=](){
                         setDialog("本小姐会在房子里看着你的～。");
                         //3
                         QTimer::singleShot(2500,this,[=](){
                             hideDialog();
-                            Animate(this).duration(AnimationType::Move,1 * 1000)
-                                .move(QPointF(coordinate.getX(-1)-100,coordinate.getY(2)),false);//1s逃离现场
+                            Animate(this).duration(AnimationType::Move,1 * 00)
+                                .move(QPointF(coordinate.getX(-1)-0,coordinate.getY(2)),false);//1s逃离现场
                         });
                     });
                 });
@@ -215,7 +215,7 @@ void Dominator::waveEvent(){
         }
     });
 }
-//响应按键event,第n波第k个事件编码 10*n + k,一般k<10
+//响应按键event,第n波第k个事件编码 *n + k,一般k<
 void Dominator::btnEvent(){
     GameScene* gamescene = getGameScene();
     if(!gamescene){
@@ -250,8 +250,11 @@ void Dominator::btnEvent(){
             giveSunlight(10,30);
             //加税
             sunlightTax = 200;
-            hideDialog();
-            randomWalk();
+            setDialog("那以后每次僵尸来，偿还本小姐200的利息就行了~");
+            QTimer::singleShot(2000,this,[=](){
+                hideDialog();
+                randomWalk();
+            });
             break;
         }
         case 11:{
@@ -757,7 +760,7 @@ void Dominator::ProtectEyes() {
     GameScene* scene = getGameScene();
     if (!scene) return;
 
-    // 1. 添加淡黄色薄膜
+    // 添加淡黄色薄膜
     if (!eyeProtectionLayer) {
         // 覆盖整个场景
         eyeProtectionLayer = new QGraphicsRectItem(scene->sceneRect());

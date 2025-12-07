@@ -96,19 +96,7 @@ void Zombie::continueMoving() {
     Animate(this).speed(AnimationType::Move,speed).move(QPointF(-1800,0));
 }
 
-// QRectF Zombie::boundingRect() const{
-    // QRectF rawRect = MyObject::boundingRect();
 
-    // rawRect.setX(-24);
-    // rawRect.setRight(75);
-    // rawRect.setY(-55);
-    // return rawRect;
-    // if(movie && movie->state() == QMovie::Running){
-    //     return QRectF(0,0,movie->currentPixmap().width(),movie->currentPixmap().height());
-    // }
-    // else return QRectF(0,0,50,50);
-// }
-// 碰撞区域（仅躯干部分）
 QPainterPath Zombie::shape() const {
     QPainterPath path;
     path.addRect(-20,-10,5,80);

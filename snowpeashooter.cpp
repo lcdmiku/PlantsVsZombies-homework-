@@ -22,7 +22,6 @@ SnowPeashooter::SnowPeashooter(QGraphicsObject *parent)
 
     // 监听检测区域的碰撞
     connect(m_detectTimer, &QTimer::timeout, this, [=](){
-        // 仅检测“射程区域”内的碰撞
         QList<QGraphicsItem*> inRangeItems = m_detectArea->collidingItems();
         for (auto it = inRangeItems.begin();it != inRangeItems.end();it++) {
             MyObject *zombie = dynamic_cast<MyObject*>(*it);//如果能转化，说明时僵尸

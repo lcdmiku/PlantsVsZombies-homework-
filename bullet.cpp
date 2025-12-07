@@ -32,13 +32,13 @@ Bullet::Bullet(QString objPath,int power)
         {
             qreal sceneWidth = scene()->width();
             qreal sceneHeight = scene()->height();
-            qreal buffer = 100; // 缓冲值，可根据需求调整
+            qreal buffer = 100; // 缓冲值
 
             //超出场景左、右、上、下边界
-            bool outOfLeft = x() < -buffer;          // 左边界外
-            bool outOfRight = x() > sceneWidth + buffer; // 右边界外
-            bool outOfTop = y() < -buffer;           // 上边界外
-            bool outOfBottom = y() > sceneHeight + buffer; // 下边界外
+            bool outOfLeft = x() < -buffer;
+            bool outOfRight = x() > sceneWidth + buffer;
+            bool outOfTop = y() < -buffer;
+            bool outOfBottom = y() > sceneHeight + buffer;
 
             if (outOfLeft || outOfRight || outOfTop || outOfBottom) {
                 dealBomb();

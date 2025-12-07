@@ -42,7 +42,8 @@ GameScene::GameScene(QObject *parent,GameLevelData* data)
     gameBg = new QGraphicsPixmapItem(QPixmap(bgPath));//背景，在~GameScene中delete
     addItem(gameBg);
 
-    dominator = new Dominator();
+    //改为datalevel存储dominator实例类
+    dominator = levelData->dominator;
     addItem(dominator);
 
     // 进度条
@@ -83,7 +84,15 @@ GameScene::GameScene(QObject *parent,GameLevelData* data)
         }
 
     });
+    //处理胜利与失败
+    // connect(this,&GameScene::GameSuccess,this,[=](bool isOk){
+    //     if(isOk){
+
+    //     }
+    // });
 }
+//处理胜利
+
 //处理进入下一波
 void GameScene::setNextWave(){
     waveMoment = 0;
@@ -116,9 +125,16 @@ void GameScene::settingInit(){
         for(int i=0;i<5;i++) zombieRow << i;
         settings->setValue("zombieRow", zombieRow);
         settings->setValue("MowerPower", 99999);
+
         settings->endGroup();
         settings->sync();
     }
+    settings->beginGroup("LevelInfo");
+    if(settings->childKeys().isEmpty()){
+        settings->setValue("unlockedLevel",1);//解锁关卡数
+        settings->setValue("limitLevel",5);//最多关卡数
+    }
+    settings->endGroup();
 }
 void GameScene::menuInit(){
     connect(settingsMenu,&SettingsMenu::GamePause,this,&GameScene::GamePause);
@@ -141,22 +157,18 @@ void GameScene::DominatorAct(){
     if(!dominator)return;
     dominator->setPos(this->sceneRect().center());
     dominator->setZValue(10);
-    // 调试用
-    // QTimer::singleShot(20000,dominator,[=](){
-    //     dominator->ProtectEyes();
-    // });
+
     connect(this,&GameScene::waveStart,dominator,&Dominator::waveStart);//使dominator能感应外界波次
     dominator->initEvent();
 }
 //选择植物阶段
 void GameScene::GamePre(){
-    qDebug() << "into GamePre()函数";
 
     //选择版
     cardAvailable();
     if(selectPlant) selectPlant->setPos(290,100);
 
-    qDebug() << "选择版";
+
     //设置背景
     if(gameBg) {
         gameBg->setPos(-330,0);
@@ -164,7 +176,6 @@ void GameScene::GamePre(){
         gameBg->setZValue(-100);
     }
 
-    qDebug() << "选择背景";
 
     //设置开始按键
     if(!start_proxy) {
@@ -212,16 +223,6 @@ void GameScene::GamePre(){
     } else {
         cardDelete_proxy->show();
     }
-
-
-    // 之前的代码:
-    /*
-    connect(this,&GameScene::GameOver,this,[=](){
-        start_proxy->show();
-        cardDelete_proxy->show();
-    });
-    */
-    // 移除这段，改为在 reset() 中调用 GamePre() 时自然会显示，或者在 GameOver 信号处理中不直接显示，而是等待 reset
 
     setItemIndexMethod(QGraphicsScene::NoIndex);
 
@@ -285,17 +286,6 @@ void GameScene::GameStart(){
     emit waveStart(0);
     if(flagMeter) flagMeter->showMeter();
 
-    // DEBUG: 10秒后直接触发胜利
-    // QTimer::singleShot(1000, this, [=](){
-    //     qDebug() << "DEBUG: Triggering player victory.";
-    //     showPlayerWon(QPointF(500,600));
-    // });
-
-    //Debug: 10秒后触发僵尸胜利
-    // QTimer::singleShot(10000, this, [=](){
-    //     qDebug() << "DEBUG: Triggering zombie victory.";
-    //     showZombieWon();
-    // });
 }
 void GameScene::move(MyObject* target,QPointF& dest){
         Animate(target).move(dest,false);
@@ -555,7 +545,7 @@ void GameScene::ZombieGenerate(ZombieType zombieType,int row,int x){
 void GameScene::ZombieGenerate(int currwave){
 
     if(currwave == 0)return;
-    // 第6波（即第7波）只生成一个冰车僵尸
+    // 第6波只生成一个冰车僵尸
     if(currwave == 6) {
         qDebug() << "yes, I'm generating zomboni!";
         int row = QRandomGenerator::global()->bounded(0,5);
@@ -604,6 +594,7 @@ void GameScene::addItem(MyObject* item){
 //析构函数
 GameScene::~GameScene(){
     delete soundManager;
+    disconnect();
     // delete shovel; // 场景会自动删除这些 item
     // delete gameBg;
 }
@@ -664,7 +655,6 @@ void GameScene::showZombieWon(){
     // 可以在动画结束后 emit GameOver
     connect(timeLine, &QTimeLine::finished, this, [=](){
          timeLine->deleteLater();
-         // emit GameOver(); // 暂时不 emit GameOver，以免清空场景导致看不到图片
          emit GameSuccess(false);
          emit GameOver();
     });
@@ -689,14 +679,24 @@ void GameScene::showPlayerWon(QPointF pos){
 
     // 点击奖杯后播放一个动画，然后没有了。
 
-    // 设置位置为传入的 pos (最后一个僵尸死亡的位置)
+    // 最后一个僵尸死亡的位置
     trophy->setPos(pos);
     trophy->setZValue(5); // 确保在最上层
 
-    // 连接奖杯的胜利动画结束信号到 GameScene 的 GameOver
-    // 注意：不要连接 trophy->GameOver，因为 addItem 会自动连接 GameScene::GameOver -> trophy->GameOver
-    // 如果双向连接会导致死循环
     connect(trophy, &Trophy::victoryAnimationFinished, this, &GameScene::GameOver);
+
+    //记录setting，又解锁新关卡
+    settings->beginGroup("LevelInfo");
+    int currUnlock = settings->value("unlockedLevel").toInt();
+    int limit = settings->value("limitLevel").toInt();
+    if(currUnlock<limit
+        && levelData->eName == QString::number(currUnlock))settings->setValue("unlockedLevel",currUnlock+1);
+    settings->endGroup();
+
+
+
+
+
 }
 
 
@@ -715,19 +715,6 @@ QList<Zombie*> GameScene::getZombiesRow(int r){
 
     return res;
 }
-//调试用
-// void GameScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
-//     if(event->button() == Qt::LeftButton){
-//         qDebug() << event->scenePos().x() << event->scenePos().y();
-//         qreal x = event->scenePos().x();
-//         qreal y = event->scenePos().y();
-//         qDebug() << "col" << coo->getCol(x);
-//         qDebug() << "row" << coo->getRow(y);
-//         qDebug() << "centerX" << coo->getX(coo->getCol(x));
-//         qDebug() << "centerY" << coo->getY(coo->getRow(y));
-//     }
-//     QGraphicsScene::mousePressEvent(event);
-// }
 
 
 //播放短时音效,use cache

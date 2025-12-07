@@ -84,6 +84,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
         scaredyshroom.cpp
         scaredyshroom.h
         soundmanager.h soundmanager.cpp
+        varydominator.h varydominator.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Game APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

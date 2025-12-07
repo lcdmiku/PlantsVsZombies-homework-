@@ -24,7 +24,7 @@ void CardsContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
 }
 
 CardsContainer::~CardsContainer() {
-    // 析构函数实现
+
 }
 
 

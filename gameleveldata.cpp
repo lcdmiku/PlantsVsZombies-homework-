@@ -2,7 +2,7 @@
 #include "gameScene.h"
 #include <QTimer>
 #include"dominator.h"
-
+#include"varydominator.h"
 
 GameLevelData::GameLevelData():
     sunProb(5),
@@ -21,7 +21,8 @@ GameLevelData::GameLevelData():
     zomboniSummonInterval(10000), // 默认10秒
     zomboniSelfSummonProb(2),      // 默认0%
     zomboniHPRate(1.0), // 默认100%
-    zomboniSpeedRate(1.0) // 默认100%
+    zomboniSpeedRate(1.0), // 默认100%
+    dominator(nullptr)
 {
 
 }
@@ -114,35 +115,6 @@ void GameLevelData::endGame(GameScene *gameScene)
 {
 
 }
-
-
-GameLevelData_1::GameLevelData_1()
-{
-    eName = "1";
-    cName = QString("Level 1-1");
-    pName = { "Peashooter", "SnowPea", "SunFlower","WallNut","CherryBomb" ,"PotatoMine","ScaredyShroom"};
-
-
-//注意：每波必须要有强度为1的僵尸否则可能因为永远无法使总强度为limitPower而引发无限循环
-
-    zombieData = { { ZombieType::NormalZombie,  1,{10,70,50,40,30,25,10} }, { ZombieType::FootballZombie, 4,{0,0,0,0,10,15,0} },
-                  { ZombieType::ScreenZombie, 3,{0,0,0,10,15,15,0} },
-                  { ZombieType::ConeZombie, 2, {0,30,30,30,25,25,0} }, { ZombieType::BucketZombie, 3, {0,0,20,20,20,20,0} } };
-
-
-    largeWaveFlag = { 2,6 };
-
-    waveTotWeightInit();//初始化每波总权重
-
-}
-
-GameLevelData *GameLevelDataFactory(const QString &eName)
-{
-    if (eName == "1")
-        return new GameLevelData_1();
-    return nullptr;
-}
-
 //此接口预留来设置冰车僵尸难度(时间间隔，生成自身的概率)
 void GameLevelData::setZomboniInterval(int interval)
 {
@@ -163,3 +135,76 @@ void GameLevelData::setZomboniSpeedRate(double rate)
 {
     zomboniSpeedRate = rate;
 }
+
+
+GameLevelData_1::GameLevelData_1()
+{
+    dominator = new Dominator();//必须进行实例化
+    eName = "1";
+    cName = QString("Level 1-1");
+    pName = { "Peashooter", "SnowPea", "SunFlower","WallNut","CherryBomb" ,"PotatoMine"};
+
+
+//注意：每波必须要有强度为1的僵尸否则可能因为永远无法使总强度为limitPower而引发无限循环
+
+    zombieData = { { ZombieType::NormalZombie,  1,{10,70,50,40,30,25,10} }, { ZombieType::FootballZombie, 4,{0,0,0,0,10,15,0} },
+                  { ZombieType::ScreenZombie, 3,{0,0,0,10,15,15,0} },
+                  { ZombieType::ConeZombie, 2, {0,30,30,30,25,25,0} }, { ZombieType::BucketZombie, 3, {0,0,20,20,20,20,0} } };
+
+
+    largeWaveFlag = { 2,6 };
+
+    waveTotWeightInit();//初始化每波总权重
+
+}
+GameLevelData_2::GameLevelData_2()
+{
+    dominator = new Dominator_2();//必须进行实例化
+    eName = "2";
+    cName = QString("Level 2-2");
+    pName = { "Peashooter", "SnowPea", "SunFlower","WallNut","CherryBomb" ,"PotatoMine","ScaredyShroom"};
+
+
+    //注意：每波必须要有强度为1的僵尸否则可能因为永远无法使总强度为limitPower而引发无限循环
+
+    zombieData = { { ZombieType::NormalZombie,  1,{10,70,50,40,30,25,10} }, { ZombieType::FootballZombie, 4,{0,0,0,0,10,15,0} },
+                  { ZombieType::ScreenZombie, 3,{0,0,0,10,15,15,0} },
+                  { ZombieType::ConeZombie, 2, {0,30,30,30,25,25,0} }, { ZombieType::BucketZombie, 3, {0,0,20,20,20,20,0} } };
+
+
+    largeWaveFlag = { 2,6 };
+
+    waveTotWeightInit();//初始化每波总权重
+
+}
+GameLevelData_3::GameLevelData_3()
+{
+    dominator = new Dominator_3();//必须进行实例化
+    eName = "3";
+    cName = QString("Level 3-3");
+    pName = { "Peashooter", "SnowPea", "SunFlower","WallNut","CherryBomb" ,"PotatoMine","ScaredyShroom"};
+
+
+    //注意：每波必须要有强度为1的僵尸否则可能因为永远无法使总强度为limitPower而引发无限循环
+
+    zombieData = { { ZombieType::NormalZombie,  1,{10,70,50,40,30,25,10} }, { ZombieType::FootballZombie, 4,{0,0,0,0,10,15,0} },
+                  { ZombieType::ScreenZombie, 3,{0,0,0,10,15,15,0} },
+                  { ZombieType::ConeZombie, 2, {0,30,30,30,25,25,0} }, { ZombieType::BucketZombie, 3, {0,0,20,20,20,20,0} } };
+
+
+    largeWaveFlag = { 2,6 };
+
+    waveTotWeightInit();//初始化每波总权重
+
+}
+GameLevelData *GameLevelDataFactory(const QString &eName)
+{
+    if (eName == "1")
+        return new GameLevelData_1();
+    if(eName == "2")
+        return new GameLevelData_2();
+    if(eName == "3")
+        return new GameLevelData_3();
+    return nullptr;
+}
+

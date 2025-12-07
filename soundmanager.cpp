@@ -136,8 +136,6 @@ void SoundManager::disposalPlay(const QString& soundPath){
 void SoundManager::mediaSoundPlay(const QString& soundPath){
     QMediaPlayer* player = new QMediaPlayer(gamescene);
     QAudioOutput* audioOutput = new QAudioOutput(gamescene);
-    players[soundPath].push_back(player);
-    audios[soundPath].push_back(audioOutput);
     //
     audioOutput->setVolume(0.5);
     player->setAudioOutput(audioOutput);
