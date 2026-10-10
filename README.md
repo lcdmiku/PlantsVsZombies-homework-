@@ -141,16 +141,10 @@ Animate(target).move(QPointF(x, y)).duration(AnimationType::Move, 500).finish(An
 - 部分类（如 `animate.h` 中的 `Animate`）存在未完全解决的 bug，但基本功能可用。
 - `soundManager` 相关提交显示音效管理仍在迭代中。
 - 文本对话功能曾尝试实现但存在遗留问题。
-- 项目为课程设计作业，代码风格与架构可能保留教学痕迹。
+- 项目为课程设计作业，代码风格与架构可能一般
 
-## 许可证
-
-本项目未声明许可证文件。如需使用、修改或分发，请先联系仓库作者 `lcdmiku` 获取授权。
 
 ## 作者
 
 - **lcdmiku** — [GitHub 主页](https://github.com/lcdmiku)
 
----
-
-*本 README 基于仓库文件结构与源码自动生成，如有细节偏差，请以实际代码为准。*
